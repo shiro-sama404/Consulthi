@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,7 +38,7 @@ public class Professional
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "professional")
+    @OneToMany(mappedBy = "professional", cascade = CascadeType.REMOVE, orphanRemoval = true) 
     private Set<StudentProfessionalLink> studentLinks;
 
     @ElementCollection(fetch = FetchType.EAGER)
