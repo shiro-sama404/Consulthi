@@ -3,6 +3,7 @@ package com.ThimoteoConsultorias.Consulthi.service;
 import com.ThimoteoConsultorias.Consulthi.model.User;
 import com.ThimoteoConsultorias.Consulthi.model.Professional;
 import com.ThimoteoConsultorias.Consulthi.enums.ExpertiseArea;
+import com.ThimoteoConsultorias.Consulthi.exception.ResourceNotFoundException;
 import com.ThimoteoConsultorias.Consulthi.repository.ProfessionalRepository;
 
 import org.springframework.stereotype.Service;
@@ -11,23 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 @Service
-public class ProfessionalService {
-
+public class ProfessionalService
+{
     private final ProfessionalRepository professionalRepository;
 
-    public ProfessionalService(ProfessionalRepository professionalRepository) {
+    public ProfessionalService(ProfessionalRepository professionalRepository)
+    {
         this.professionalRepository = professionalRepository;
     }
 
-    public java.util.Optional<Professional> getProfessionalById(Long id) {
-        return professionalRepository.findById(id);
-    }
-
     @Transactional
-    public Professional createProfessionalProfile(User user, String register, Set<ExpertiseArea> areasOfExpertise) {
-        
+    public Professional createProfessionalProfile(User user, String register, Set<ExpertiseArea> areasOfExpertise)
+    {
         Professional professional = Professional.builder()
-                .id(user.getId())
                 .user(user)
                 .register(register)
                 .expertiseAreas(areasOfExpertise)
@@ -35,8 +32,10 @@ public class ProfessionalService {
         
         return professionalRepository.save(professional);
     }
-    
-    // TODO:
-    // - Aceitar/Rejeitar o cadastro de um profissional (Admin).
-    // - Gerenciar o conteúdo autoral.
+
+    public Professional getProfessionalById(Long id) throws ResourceNotFoundException
+    {
+        return professionalRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Profissional de id '" + id +"' não encontrado."));
+    }
 }

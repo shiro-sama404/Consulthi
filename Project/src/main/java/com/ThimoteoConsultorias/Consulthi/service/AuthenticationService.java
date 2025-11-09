@@ -1,9 +1,7 @@
 package com.ThimoteoConsultorias.Consulthi.service;
 
 import com.ThimoteoConsultorias.Consulthi.config.AppUser;
-import com.ThimoteoConsultorias.Consulthi.exception.ResourceNotFoundException;
 import com.ThimoteoConsultorias.Consulthi.model.User;
-import com.ThimoteoConsultorias.Consulthi.repository.UserRepository;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,12 +15,12 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService implements UserDetailsService 
 {
     private final PasswordEncoder passwordEncoder;
-    private final UserRepository  userRepository;
+    private final UserService  userService;
 
-    public AuthenticationService(PasswordEncoder passwordEncoder, UserRepository userRepository)
+    public AuthenticationService(PasswordEncoder passwordEncoder, UserService userService)
     {
         this.passwordEncoder   = passwordEncoder;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public Long getAuthenticatedUserId()
@@ -39,25 +37,19 @@ public class AuthenticationService implements UserDetailsService
     @Override
     public AppUser loadUserByUsername(String username) throws UsernameNotFoundException
     {
-        User user = userRepository.findByUsername(username)
-        .orElseThrow(() -> new UsernameNotFoundException("Usuário '" + username + "' não encontrado."));
-
+        User user = userService.getUserByUsername(username);
         return new AppUser(user);
     }
 
     public boolean checkPasswordByUsername(String rawPassword, String username)
     {
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuário '"+username+"'' não encontrado."));
-
+        User user = userService.getUserByUsername(username);
         return passwordEncoder.matches(rawPassword, user.getPasswordHash());
     }
 
     public boolean checkPasswordByEmail(String email, String username)
     {
-        User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("Usuário '"+username+"'' não encontrado."));
-
+        User user = userService.getUserByEmail(email);
         return passwordEncoder.matches(email, user.getPasswordHash());
     }
 }
