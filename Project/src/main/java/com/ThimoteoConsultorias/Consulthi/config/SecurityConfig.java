@@ -1,7 +1,10 @@
 package com.ThimoteoConsultorias.Consulthi.config;
 
+import com.ThimoteoConsultorias.Consulthi.service.AppUserDetailsService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,19 +13,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import com.ThimoteoConsultorias.Consulthi.service.AppUserDetailsService;
-
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig
 {
-    private final AppUserDetailsService appUserDetailsService;
-    private final PasswordEncoder       passwordEncoder;
+    private final AppUserDetailsService        appUserDetailsService;
+    private final PasswordEncoder              passwordEncoder;
 
-    public SecurityConfig(AppUserDetailsService appUserDetailsService, PasswordEncoder passwordEncoder)
+    private final AuthenticationFailureHandler authenticationFailureHandler;
+    private final LoginSuccessHandler          loginSuccessHandler;
+
+    public SecurityConfig
+    (
+        AppUserDetailsService appUserDetailsService,
+        PasswordEncoder passwordEncoder,
+        AuthenticationFailureHandler authenticationFailureHandler,
+        LoginSuccessHandler loginSuccessHandler
+    )
     {
         this.appUserDetailsService = appUserDetailsService;
         this.passwordEncoder       = passwordEncoder;
+
+        this.authenticationFailureHandler = authenticationFailureHandler;
+        this.loginSuccessHandler          = loginSuccessHandler;
     }
 
     @Bean
@@ -34,11 +48,11 @@ public class SecurityConfig
                 .requestMatchers("/home/", "/", "/login", "/register", "/tutorial", "/css/**", "/js/**", "/img/**").permitAll()
                 // Exige autenticação para qualquer outra página
                 .anyRequest().authenticated()      
-                )
-                .formLogin(form -> form
-                // Define a página de login personalizada
+            )
+            .formLogin(form -> form
                 .loginPage("/login")
-                // Redireciona para /home após login bem-sucedido           
+                .successHandler(loginSuccessHandler) 
+                .failureHandler(authenticationFailureHandler)
                 .defaultSuccessUrl("/home", true) 
                 .permitAll()
             )
