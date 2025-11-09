@@ -16,4 +16,19 @@ public enum ExpertiseArea
     EXERCISE_PSYCHOLOGY,
     EDUCACIONAL_PSYCHOLOGY,
     SPORTS_PSYCHOLOGY;
+
+    public boolean isCoachRole()
+    {
+        return this == HIGH_PERFORMANCE_SPORTS || this == PHYSICAL_EDUCATION || this == PHYSIOTHERAPY || this == SPORTS;
+    }
+
+    public boolean isNutritionistRole()
+    {
+        return this == BEHAVIORAL_NUTRITION || this == CLINICAL_NUTRITION || this == HEALTH_NUTRITION || this == SPORTS_NUTRITION;
+    }
+
+    public boolean isPsychologistRole()
+    {
+        return this == CLINICAL_PSYCHOLOGY || this == EXERCISE_PSYCHOLOGY || this == EDUCACIONAL_PSYCHOLOGY || this == SPORTS_PSYCHOLOGY;
+    }
 }

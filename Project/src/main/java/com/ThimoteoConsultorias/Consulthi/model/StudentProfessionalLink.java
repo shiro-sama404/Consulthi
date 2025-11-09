@@ -11,6 +11,8 @@ import lombok.Setter;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,9 +28,10 @@ import java.time.LocalDateTime;
 public class StudentProfessionalLink
 {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; 
 
-@ManyToOne
+    @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -36,7 +39,6 @@ public class StudentProfessionalLink
     @JoinColumn(name = "professional_id")
     private Professional professional;
     
-    // Status do vínculo
     @Enumerated(EnumType.STRING)
     private LinkStatus status;
     
