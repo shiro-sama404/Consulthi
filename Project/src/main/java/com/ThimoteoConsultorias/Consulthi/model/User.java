@@ -66,4 +66,14 @@ public class User
             .stream()
             .collect(Collectors.toSet());
     }
+
+    public String getRolesAsString()
+    {
+        if (this.roles == null || this.roles.isEmpty())
+            return "";
+            
+        return this.roles.stream()
+            .map(Role::name)
+            .collect(Collectors.joining(", "));
+    }
 }

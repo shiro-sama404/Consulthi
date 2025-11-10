@@ -19,8 +19,9 @@ public interface StudentProfessionalLinkRepository extends JpaRepository<Student
     List<StudentProfessionalLink> findByStudent(Student student);
     List<StudentProfessionalLink> findByProfessionalAndStatusIn(Professional professional, Collection<LinkStatus> status);
     List<StudentProfessionalLink> findByStudentAndStatusIn(Student student, Collection<LinkStatus> status);
-    List<StudentProfessionalLink> findByStatusAndDateRequestBefore(Collection<LinkStatus> status, LocalDateTime dateRequest);
-    
+    List<StudentProfessionalLink> findByStatusInAndDateRequestBefore(Collection<LinkStatus> status, LocalDateTime dateTime);
+
+
     long countByStudentAndStatusIn(Student student, Collection<LinkStatus> status);
     long countByStudentUserIdAndProfessionalUserIdAndStatusIn(Long studentUserId, Long professionalUserId, Collection<LinkStatus> status);
 }

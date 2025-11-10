@@ -110,7 +110,7 @@ public class StudentProfessionalLinkService
     public List<StudentProfessionalLink> getLinksByStudentAndStatusIn(Student student, Collection<LinkStatus> status)
     { return linkRepository.findByStudentAndStatusIn(student, status); }
     public List<StudentProfessionalLink> getLinksByStatusAndDateRequestBefore(Collection<LinkStatus> status, LocalDateTime dateTime)
-    { return linkRepository.findByStatusAndDateRequestBefore(status, dateTime); }
+    { return linkRepository.findByStatusInAndDateRequestBefore(status, dateTime); }
     public long countByStudentAndStatusIn(Student student, Collection<LinkStatus> status)
     { return linkRepository.countByStudentAndStatusIn(student, status); }
     public long countByStudentUserIdAndProfessionalUserIdAndStatusIn(Long studentUserId, Long professionalUserId, Collection<LinkStatus> status)
@@ -247,8 +247,7 @@ public class StudentProfessionalLinkService
     {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
         
-        List<StudentProfessionalLink> escalationLinks = linkRepository
-            .findByStatusAndDateRequestBefore(EnumSet.of(LinkStatus.PENDING), oneWeekAgo);
+        List<StudentProfessionalLink> escalationLinks = getLinksByStatusAndDateRequestBefore(EnumSet.of(LinkStatus.PENDING), oneWeekAgo);
 
         if (!escalationLinks.isEmpty())
         {
