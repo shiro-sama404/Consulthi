@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Home - ConsulThi</title>
+</head>
+<body>
+    <h1>Bem-vindo ao ConsulThi!</h1>
+    <p>Você está logado como: <span sec:authentication="name"></span></p>
+
+    <div sec:authorize="hasAuthority('ADMINISTRATOR')">
+        <p><a th:href="@{/admin}">Ir para Painel de Administração</a></p>
+    </div>
+    <div sec:authorize="hasAnyAuthority('COACH', 'NUTRITIONIST', 'PSYCHOLOGIST')">
+        <p><a th:href="@{/professional/dashboard}">Ir para Painel do Profissional</a></p>
+    </div>
+    <div sec:authorize="hasAuthority('STUDENT')">
+        <p><a th:href="@{/student/dashboard}">Ir para Dashboard do Aluno</a></p>
+    </div>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Sair</button>
+    </form>
+</body>
+</html>
