@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class RoutineInstanceService
@@ -84,10 +83,13 @@ public class RoutineInstanceService
              throw new IllegalArgumentException("O ID fornecido não pertence a um template de Rotina.");
         }
 
-        // Verifica se a instância já existe (para evitar duplicação)
-        Optional<RoutineInstance> existingInstance = routineInstanceRepository.findByStudentAndRoutine(student, routine);
-        if (existingInstance.isPresent())
-            throw new IllegalStateException("Esta rotina já está ativa para este aluno.");
+        try
+        {
+            RoutineInstance existingInstance = getActiveRoutineInstance(student, routine);
+            if (existingInstance != null)
+                throw new IllegalStateException("Esta rotina já está ativa para este aluno.");
+        }
+        catch(ResourceNotFoundException doNothing){}
         
         RoutineInstance instance = RoutineInstance.builder()
             .student(student)
@@ -134,12 +136,36 @@ public class RoutineInstanceService
      */
 
     /**
+     * Retorna uma Instância de Rotina pelo seu ID.
+     * @param id O ID da RoutineInstance.
+     * @throws ResourceNotFoundException se não for encontrada.
+     */
+    public RoutineInstance getRoutineInstanceById(Long id) throws ResourceNotFoundException
+    {
+        return routineInstanceRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Instância de Rotina de id '" + id + "' não encontrada."));
+    }
+
+    /**
      * Busca todas as instâncias de rotina ativas para um aluno logado (RF06).
      */
     public List<RoutineInstance> getActiveRoutinesByStudent(Long studentUserId)
     {
         Student student = studentService.getStudentById(studentUserId);
         return routineInstanceRepository.findByStudent(student);
+    }
+
+    /**
+     * Busca uma instância de rotina específica, ativa, que liga o aluno a um template de rotina.
+     * @param student O Aluno.
+     * @param routine O Template de Rotina.
+     * @return A instância ativa, se encontrada.
+     */
+    public RoutineInstance getActiveRoutineInstance(Student student, Routine routine)
+    throws ResourceNotFoundException
+    {
+        return routineInstanceRepository.findByStudentAndRoutine(student, routine)
+            .orElseThrow(() -> new ResourceNotFoundException("Instância de Rotina não encontrada.")); 
     }
 
     /**
