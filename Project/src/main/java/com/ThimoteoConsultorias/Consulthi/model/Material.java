@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Set;
 
 @SuperBuilder
-@Entity
-@DiscriminatorValue("MATERIAL")
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
+@Entity
+@DiscriminatorValue("MATERIAL")
 public class Material extends Content
 {
     @ElementCollection(fetch = FetchType.EAGER)

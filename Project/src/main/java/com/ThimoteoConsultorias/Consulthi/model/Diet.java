@@ -9,11 +9,11 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 @SuperBuilder
-@DiscriminatorValue("DIET")
-@Entity
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
+@Entity
+@DiscriminatorValue("DIET")
 public class Diet extends Content
 {  
     @Column(columnDefinition = "TEXT")

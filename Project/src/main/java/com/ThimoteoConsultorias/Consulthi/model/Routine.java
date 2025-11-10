@@ -3,11 +3,13 @@ package com.ThimoteoConsultorias.Consulthi.model;
 import com.ThimoteoConsultorias.Consulthi.enums.GoalType;
 import com.ThimoteoConsultorias.Consulthi.enums.RoutineLevel;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -22,11 +24,12 @@ import java.util.List;
 import java.util.Set;
 
 @SuperBuilder
-@Entity
-@DiscriminatorValue("ROUTINE")
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
+@Entity
+@DiscriminatorValue("ROUTINE")
 public class Routine extends Content
 {
     @Enumerated(EnumType.STRING)
@@ -37,7 +40,7 @@ public class Routine extends Content
     @Enumerated(EnumType.STRING)
     private Set<GoalType> goals;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true) 
     @JoinColumn(name = "routine_id")
     @OrderColumn(name = "training_order")
     private List<Training> trainings;

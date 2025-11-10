@@ -21,13 +21,13 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
 
-@Entity
-@Table(name = "routine_instance")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "routine_instance")
 public class RoutineInstance
 {
     @Id

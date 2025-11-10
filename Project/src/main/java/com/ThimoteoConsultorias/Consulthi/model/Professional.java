@@ -45,5 +45,5 @@ public class Professional
     @Enumerated(EnumType.STRING)
     private Set<ExpertiseArea> expertiseAreas;
 
-    private String register; // CREF, CRP, CRN, etc.
+    private String register;
 }

@@ -21,16 +21,13 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Entidade que armazena o conteúdo da notificação (o alerta em si).
- */
-@Entity
-@Table(name = "notification")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "notification")
 public class Notification
 {
     @Id
@@ -42,11 +39,9 @@ public class Notification
     @Column(columnDefinition = "TEXT")
     private String messageBody;
 
-    // Tipo/Categoria da notificação (EX: APPROVAL, SYSTEM, ACCESS_GRANTED)
     @Enumerated(EnumType.STRING)
     private NotificationType type; 
     
-    // ID do usuário que enviou a notificação (0 para o sistema)
     @Column(nullable = false)
     private Long senderUserId; 
     

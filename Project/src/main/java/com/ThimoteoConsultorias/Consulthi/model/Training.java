@@ -24,13 +24,13 @@ import jakarta.persistence.Table;
 import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table(name = "training")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "training")
 public class Training
 {
     @Id

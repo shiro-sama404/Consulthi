@@ -17,25 +17,23 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "training_history")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Entity
+@Table(name = "training_history")
 public class TrainingHistory
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Liga à qual INSTÂNCIA de Rotina este Treino executado pertence
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "routine_instance_id", nullable = false)
     private RoutineInstance routineInstance; 
     
-    // Liga ao Treino original (Template)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "training_template_id", nullable = false)
     private Training training;

@@ -25,15 +25,15 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Estratégia de herança em uma única tabela
-@DiscriminatorColumn(name = "content_type", discriminatorType = DiscriminatorType.STRING) // Coluna para identificar o tipo
-@Table(name = "content")
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "content")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "content_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Content
 { 
     @Id

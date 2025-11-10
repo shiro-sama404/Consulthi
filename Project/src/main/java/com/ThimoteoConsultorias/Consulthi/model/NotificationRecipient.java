@@ -18,29 +18,23 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-/**
- * Entidade de ligação que rastreia qual usuário recebeu qual notificação e se ele leu.
- */
-@Entity
-@Table(name = "notification_recipient")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-// Nota: Em sistemas complexos, você pode querer uma chave composta, mas o ID simples é suficiente aqui.
+@Entity
+@Table(name = "notification_recipient")
 public class NotificationRecipient
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Chave estrangeira para a notificação (Muitos Recipients para Uma Notification)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "notification_id", nullable = false)
     private Notification notification;
 
-    // ID do usuário que recebe a notificação
     @Column(nullable = false)
     private Long recipientUserId; 
     

@@ -105,23 +105,23 @@ public class StudentProfessionalLinkService
     { return linkRepository.findByProfessional(professional); }
     public List<StudentProfessionalLink> getLinksByStudent(Student student)
     { return linkRepository.findByStudent(student); }
-    public List<StudentProfessionalLink> getLinksByProfessionalAndStatus(Professional professional, Collection<LinkStatus> status)
-    { return linkRepository.findByProfessionalAndStatus(professional, status); }
-    public List<StudentProfessionalLink> getLinksByStudentAndStatus(Student student, Collection<LinkStatus> status)
-    { return linkRepository.findByStudentAndStatus(student, status); }
+    public List<StudentProfessionalLink> getLinksByProfessionalAndStatusIn(Professional professional, Collection<LinkStatus> status)
+    { return linkRepository.findByProfessionalAndStatusIn(professional, status); }
+    public List<StudentProfessionalLink> getLinksByStudentAndStatusIn(Student student, Collection<LinkStatus> status)
+    { return linkRepository.findByStudentAndStatusIn(student, status); }
     public List<StudentProfessionalLink> getLinksByStatusAndDateRequestBefore(Collection<LinkStatus> status, LocalDateTime dateTime)
     { return linkRepository.findByStatusAndDateRequestBefore(status, dateTime); }
-    public long countByStudentAndStatus(Student student, Collection<LinkStatus> status)
-    { return linkRepository.countByStudentAndStatus(student, status); }
-    public long countByStudentUserIdAndProfessionalUserIdAndStatus(Long studentUserId, Long professionalUserId, Collection<LinkStatus> status)
-    { return linkRepository.countByStudentUserIdAndProfessionalUserIdAndStatus(studentUserId, professionalUserId, status); }
+    public long countByStudentAndStatusIn(Student student, Collection<LinkStatus> status)
+    { return linkRepository.countByStudentAndStatusIn(student, status); }
+    public long countByStudentUserIdAndProfessionalUserIdAndStatusIn(Long studentUserId, Long professionalUserId, Collection<LinkStatus> status)
+    { return linkRepository.countByStudentUserIdAndProfessionalUserIdAndStatusIn(studentUserId, professionalUserId, status); }
 
     /**
      * Implementa a verificação de vínculo ativo (ACCEPTED) para acesso ao conteúdo (RF06).
      */
     public boolean isActiveLink(Long studentUserId, Long professionalUserId)
     {
-        long count = countByStudentUserIdAndProfessionalUserIdAndStatus(
+        long count = countByStudentUserIdAndProfessionalUserIdAndStatusIn(
             studentUserId,
             professionalUserId,
             EnumSet.of(LinkStatus.ACCEPTED)
@@ -151,7 +151,7 @@ public class StudentProfessionalLinkService
             link.setStatus(LinkStatus.ACCEPTED);
             StudentProfessionalLink savedLink = linkRepository.save(link);
 
-            long acceptedLinksCount = linkRepository.countByStudentAndStatus(link.getStudent(), EnumSet.of(LinkStatus.ACCEPTED));
+            long acceptedLinksCount = linkRepository.countByStudentAndStatusIn(link.getStudent(), EnumSet.of(LinkStatus.ACCEPTED));
             
             // Ativa o usuário se este foi o primeiro link aceito
             if (acceptedLinksCount == 1) 

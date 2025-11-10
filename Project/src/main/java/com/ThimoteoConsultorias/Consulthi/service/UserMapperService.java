@@ -37,7 +37,7 @@ public class UserMapperService
     }
 
     // ----------------------------------------------------
-    // 3. MÉTODOS DE MAPEO (sem transação, pois é apenas conversão)
+    // 3. MÉTODOS DE MAP
     // ----------------------------------------------------
 
     /**
