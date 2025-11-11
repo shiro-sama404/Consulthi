@@ -12,17 +12,13 @@ spring:
   
   jpa:
     hibernate:
-      # O Hibernate criará/atualizará as tabelas
       ddl-auto: update
     properties:
       hibernate:
-        # Mostra o SQL gerado no console
         show_sql: true
         format_sql: true
-        # Dialeto específico para PostgreSQL
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-# Configuração de logging
 logging:
   level:
     # Mostra todas as queries SQL geradas

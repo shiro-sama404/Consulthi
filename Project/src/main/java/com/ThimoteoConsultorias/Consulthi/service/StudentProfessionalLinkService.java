@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
-@Lazy
+//@Lazy
 @Service
 public class StudentProfessionalLinkService
 {
@@ -29,8 +29,8 @@ public class StudentProfessionalLinkService
     private final LoggerService loggerService;
     private final NotificationService notificationService;
     private final ProfessionalService professionalService;
-
-    private UserService userService;
+    private final UserService userService;
+    //private UserService userService;
 
     // ----------------------------------------------------
     // 2. CONSTRUTOR
@@ -40,21 +40,23 @@ public class StudentProfessionalLinkService
         StudentProfessionalLinkRepository linkRepository,
         LoggerService loggerService,
         NotificationService notificationService,
-        ProfessionalService professionalService
+        ProfessionalService professionalService,
+        UserService userService
     )
     {
         this.linkRepository = linkRepository;
         this.loggerService = loggerService;
         this.notificationService = notificationService;
         this.professionalService = professionalService;
-    }
-    
-    @Autowired
-    @Lazy
-    public void setUserService(UserService userService)
-    {
         this.userService = userService;
     }
+    
+    //@Autowired
+    //@Lazy
+    //public void setUserService(UserService userService)
+    //{
+    //    this.userService = userService;
+    //}
 
     // ----------------------------------------------------
     // 3. MÉTODOS DE DOMÍNIO

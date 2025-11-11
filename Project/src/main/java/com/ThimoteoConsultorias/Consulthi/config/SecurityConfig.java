@@ -64,12 +64,10 @@ public class SecurityConfig
             // Habilita exceções de mapeamento não encontrado
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint((request, response, authException) -> {
-                    // Redireciona à página de login para erros de autenticação
                     response.sendRedirect("/login");
                 })
-                .accessDeniedPage("/error") // Página genérica para erros de acesso negado
+                .accessDeniedPage("/error")
             )
-            // Permite passar 404 para o controlador
             .setSharedObject(NoHandlerFoundException.class, null);
         
         return http.build();

@@ -24,13 +24,16 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
 
     @Override
     public void onAuthenticationFailure
-    (HttpServletRequest request,
-    HttpServletResponse response,
-    AuthenticationException exception
+    (
+        HttpServletRequest request,
+        HttpServletResponse response,
+        AuthenticationException exception
     )
     throws IOException, ServletException
     {
+        System.out.println("nha");
         String username = request.getParameter("username");
+        System.out.println("nha2");
 
         if (username != null) 
             userService.registerFailedLogin(username);

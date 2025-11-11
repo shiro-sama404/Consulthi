@@ -3,7 +3,11 @@ package com.ThimoteoConsultorias.Consulthi.controller;
 import com.ThimoteoConsultorias.Consulthi.dto.UserDTO;
 import com.ThimoteoConsultorias.Consulthi.enums.Role;
 import com.ThimoteoConsultorias.Consulthi.model.Professional;
+import com.ThimoteoConsultorias.Consulthi.model.Student;
+import com.ThimoteoConsultorias.Consulthi.model.User;
 import com.ThimoteoConsultorias.Consulthi.service.ProfessionalService;
+import com.ThimoteoConsultorias.Consulthi.service.StudentProfessionalLinkService;
+import com.ThimoteoConsultorias.Consulthi.service.StudentService;
 import com.ThimoteoConsultorias.Consulthi.service.UserService;
 
 import org.springframework.stereotype.Controller;
@@ -20,13 +24,23 @@ import java.util.List;
 @RequestMapping("/")
 public class AuthenticationController
 {
-    private final UserService userService;
+    private final StudentProfessionalLinkService linkService;
     private final ProfessionalService professionalService;
+    private final StudentService studentService;
+    private final UserService userService;
 
-    public AuthenticationController(UserService userService, ProfessionalService professionalService)
+    public AuthenticationController
+    (
+        StudentProfessionalLinkService linkService,
+        ProfessionalService professionalService,
+        StudentService studentService,
+        UserService userService
+    )
     {
-        this.userService = userService;
+        this.linkService = linkService;
         this.professionalService = professionalService;
+        this.studentService = studentService;
+        this.userService = userService;
     }
 
     /**
@@ -64,9 +78,7 @@ public class AuthenticationController
         try
         {
             List<Professional> allProfessionals = professionalService.getAllProfessionals(); // Assumindo novo método
-            
-            model.addAttribute("availableProfessionals", allProfessionals);
-            
+            model.addAttribute("availableProfessionals", allProfessionals);  
         }
         catch (Exception e)
         {
@@ -84,8 +96,16 @@ public class AuthenticationController
     {
         try
         {
-            userService.createUser(userDto);
+            User newUser = userService.createUser(userDto);
             
+            if (userDto.roles().contains(Role.STUDENT) && 
+                userDto.selectedProfessionalIds() != null && 
+                !userDto.selectedProfessionalIds().isEmpty())
+            {
+                Student studentProfile = studentService.getStudentById(newUser.getId());
+                linkService.createPendingLinks(studentProfile, userDto.selectedProfessionalIds());
+            }
+
             redirectAttributes.addFlashAttribute("message", "Solicitação de cadastro enviada! Aguarde a aprovação do Administrador/Profissional.");
             return "redirect:/login";
 

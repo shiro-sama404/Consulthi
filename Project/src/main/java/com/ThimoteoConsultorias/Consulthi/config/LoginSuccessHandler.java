@@ -12,24 +12,27 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class LoginSuccessHandler implements AuthenticationSuccessHandler {
-
+public class LoginSuccessHandler implements AuthenticationSuccessHandler
+{
     private final UserService userService;
 
-    public LoginSuccessHandler(UserService userService) {
+    public LoginSuccessHandler(UserService userService)
+    {
         this.userService = userService;
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        
-        // Obtém o username do usuário autenticado
+    public void onAuthenticationSuccess
+    (
+        HttpServletRequest request,
+        HttpServletResponse response,
+        Authentication authentication
+    )
+    throws IOException, ServletException
+    {
         String username = authentication.getName();
-        
-        // Reseta a contagem de falhas
         userService.resetLoginAttempts(username); 
         
-        // Continua para a página inicial (ou a defaultSuccessUrl configurada)
         response.sendRedirect(request.getContextPath() + "/home");
     }
 }
