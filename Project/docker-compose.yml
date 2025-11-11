@@ -1,0 +1,45 @@
+services:
+  # SERVIÇO DE BANCO DE DADOS (POSTGRESQL)
+  consulthi-db:
+    image: postgres:16
+    container_name: consulthi-db
+    restart: always
+    environment:
+      POSTGRES_USER: consulthi_user
+      POSTGRES_PASSWORD: 'temp'
+      POSTGRES_DB: consulthi_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - consulthi_data:/var/lib/postgresql/data
+
+  # SERVIÇO DE ADMINISTRAÇÃO (PGADMIN)
+  pgadmin-consulthi:
+    image: dpage/pgadmin4
+    container_name: pgadmin-consulthi
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@consulthi.com
+      PGADMIN_DEFAULT_PASSWORD: 'admin'
+    ports:
+      - "8081:80"
+    depends_on:
+      - consulthi-db
+
+  # APLICAÇÃO CONSULTHI (SPRING BOOT)
+  consulthi-app:
+    build: .
+    container_name: consulthi-app
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - consulthi-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://consulthi-db:5432/consulthi_db
+      SPRING_DATASOURCE_USERNAME: consulthi_user
+      SPRING_DATASOURCE_PASSWORD: 'temp'
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+volumes:
+  consulthi_data:
