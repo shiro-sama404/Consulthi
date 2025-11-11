@@ -25,10 +25,10 @@ public class UserService
     private final PasswordEncoder passwordEncoder;
     private final UserRepository  userRepository;
 
-    private final StudentProfessionalLinkService linkService;
+    //private final StudentProfessionalLinkService linkService;
     private final NotificationService notificationService;
     private final ProfessionalService professionalService; 
-    private final SchedulerService schedulerService; 
+    //private final SchedulerService schedulerService; 
     private final StudentService studentService; 
 
     // ----------------------------------------------------
@@ -36,11 +36,11 @@ public class UserService
     // ----------------------------------------------------
     public UserService
     (
-        StudentProfessionalLinkService linkService,
+        //StudentProfessionalLinkService linkService,
         NotificationService notificationService,
         PasswordEncoder passwordEncoder,
         ProfessionalService professionalService,
-        SchedulerService schedulerService,
+        //SchedulerService schedulerService,
         StudentService studentService,
         UserRepository userRepository
     )
@@ -48,10 +48,10 @@ public class UserService
         this.passwordEncoder = passwordEncoder;
         this.userRepository  = userRepository;
 
-        this.linkService = linkService;
+        //this.linkService = linkService;
         this.notificationService = notificationService;
         this.professionalService = professionalService;
-        this.schedulerService = schedulerService;
+        //this.schedulerService = schedulerService;
         this.studentService = studentService;
     }
 
@@ -96,8 +96,8 @@ public class UserService
         {
             Student student = studentService.createStudentProfile(savedUser);
             
-            if (userDetails.selectedProfessionalIds() != null && !userDetails.selectedProfessionalIds().isEmpty())
-                linkService.createPendingLinks(student, userDetails.selectedProfessionalIds());
+            //if (userDetails.selectedProfessionalIds() != null && !userDetails.selectedProfessionalIds().isEmpty())
+            //    linkService.createPendingLinks(student, userDetails.selectedProfessionalIds());
         } 
         
         if (userDetails.roles().stream().anyMatch(Role::isProfessionalRole))
@@ -210,7 +210,7 @@ public class UserService
     /**
      * Registra uma falha de login, incrementando o contador e notificando se o limite for atingido.
      */
-    @Transactional
+    //@Transactional
     public void registerFailedLogin(String username)
     {
         User user = userRepository.findByUsername(username).orElse(null);
@@ -231,7 +231,7 @@ public class UserService
     /**
      * Reseta a contagem de falhas após login bem-sucedido.
      */
-    @Transactional
+    //@Transactional
     public void resetLoginAttempts(String username)
     {
         // Usa o método de leitura para obter o User
@@ -255,16 +255,13 @@ public class UserService
      * @throws ResourceNotFoundException se o usuário não for encontrado.
      */
     @Transactional
-    public void requestDeactivation(Long userId) throws ResourceNotFoundException
+    public User requestDeactivation(Long userId) throws ResourceNotFoundException
     {
         User user = getUserById(userId);
         
         user.setActive(false);
         userRepository.save(user);
         
-        // Agendamento da exclusão permanente
-        schedulerService.scheduleDataDeletion(user);
-        
-        System.out.println("USER " + userId + " desativou a conta. Exclusão agendada em 1 mês.");
+        return user;
     }
 }
