@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title th:text="|Editar: ${contentDto.name}|">Editar Conteúdo</title>
+    
+    <th:block layout:fragment="page-head">
+        <style>
+            .dynamic-item {
+                position: relative;
+                padding-right: 40px; 
+            }
+            .remove-btn {
+                position: absolute;
+                top: 50%;
+                right: 0;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: hsl(var(--destructive));
+                font-weight: bold;
+                padding: 4px 8px;
+                background-color: hsl(var(--destructive) / 0.1);
+                border-radius: 99px;
+            }
+            .remove-btn:hover {
+                background-color: hsl(var(--destructive) / 0.2);
+            }
+            .remove-btn-top {
+                 position: absolute;
+                 top: 1.5rem;
+                 right: 1.5rem;
+                 transform: none;
+            }
+        </style>
+    </th:block>
+</head>
+
+<main layout:fragment="content" class="pt-24 pb-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+
+        <h1 class="text-4xl font-bold text-foreground mb-8">
+            Editar <span class="bg-gradient-primary bg-clip-text text-transparent">Conteúdo</span>
+        </h1>
+        
+        <div th:if="${error}" class="bg-destructive/10 text-destructive border border-destructive p-3 rounded-md mb-6 text-center">
+            <p th:text="${error}"></p>
+        </div>
+
+        <form th:action="@{/professional/content/edit/{id}(id=${contentDto.id})}" th:object="${contentDto}" method="post" 
+              class="bg-card border border-border rounded-xl shadow-lg p-8 space-y-6">
+
+            <input type="hidden" th:field="*{id}" />
+            <input type="hidden" th:field="*{contentType}" />
+
+            <!-- Campos Comuns -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-muted-foreground mb-1">Título</label>
+                <input type="text" id="name" th:field="*{name}" required
+                       class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+            </div>
+            <div>
+                <label for="description" class="block text-sm font-medium text-muted-foreground mb-1">Descrição</label>
+                <textarea id="description" th:field="*{description}" rows="3"
+                          class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-muted-foreground mb-1">Tipo de Conteúdo</label>
+                <p class="w-full p-3 rounded-md bg-background border border-border text-muted-foreground" th:text="*{contentType.name()}"></p>
+            </div>
+
+            <!-- Container dos Campos Específicos -->
+            <div class="space-y-6 pt-4 border-t border-border">
+
+                <!-- ======================= -->
+                <!-- Caso 1: DIET            -->
+                <!-- ======================= -->
+                <div th:if="*{contentType.name() == 'DIET'}" class="space-y-6">
+                    <div>
+                        <label for="mealsEspecifications" class="block text-sm font-medium text-muted-foreground mb-1">Plano Alimentar (apenas texto)</label>
+                        <textarea id="mealsEspecifications" th:field="*{mealsEspecifications}" rows="10"
+                                  class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"></textarea>
+                    </div>
+                </div>
+
+                <!-- ======================= -->
+                <!-- Caso 2: MATERIAL        -->
+                <!-- ======================= -->
+                <div th:if="*{contentType.name() == 'MATERIAL'}" class="space-y-6">
+                    <div>
+                        <label for="tags" class="block text-sm font-medium text-muted-foreground mb-1">Tags (separadas por vírgula)</label>
+                        <input type="text" id="tags" th:field="*{tags}"
+                               class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                    </div>
+                    
+                    <div class="border-t border-border pt-6">
+                        <h3 class="text-xl font-semibold text-foreground mb-4">Blocos de Conteúdo</h3>
+                        <div id="content-blocks-list" class="space-y-4">
+                            
+                            <!-- Loop para renderizar blocos existentes -->
+                            <!-- *** CORRIGIDO DE .content PARA .value *** -->
+                            <div th:each="block, bStat : *{contentBlocks}" class="dynamic-item p-4 border border-border rounded-lg space-y-3 bg-background/50">
+                                <span class="remove-btn remove-btn-top" onclick="this.parentElement.remove()">X</span>
+                                <div>
+                                    <label class="text-xs font-medium text-muted-foreground">Tipo de Bloco</label>
+                                    <select th:field="*{contentBlocks[__${bStat.index}__].type}" class="w-full p-2 text-sm rounded-md bg-background border border-border">
+                                        <option value="TEXT">Texto</option>
+                                        <option value="IMAGE">Imagem (URL)</option>
+                                        <option value="VIDEO">Vídeo (URL)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs font-medium text-muted-foreground">Conteúdo (Texto ou URL)</label>
+                                    <textarea th:field="*{contentBlocks[__${bStat.index}__].value}" rows="3" class="w-full p-2 text-sm rounded-md bg-background border border-border"></textarea>
+                                </div>
+                            </div>
+
+                        </div>
+                        <button type="button" id="add-content-block-btn"
+                                class="mt-4 inline-flex items-center justify-center px-4 py-2 h-9 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-medium transition-colors">
+                            Adicionar Bloco
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ======================= -->
+                <!-- Caso 3: ROUTINE         -->
+                <!-- ======================= -->
+                <div th:if="*{contentType.name() == 'ROUTINE'}" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="level" class="block text-sm font-medium text-muted-foreground mb-1">Nível da Rotina</label>
+                            <select id="level" th:field="*{routineLevel}" class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                                <option th:each="opt : ${routineLevels}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="goal" class="block text-sm font-medium text-muted-foreground mb-1">Objetivo Principal</label>
+                            <select id="goal" th:field="*{goals}" class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                                <option th:each="opt : ${goalTypes}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="startDate" class="block text-sm font-medium text-muted-foreground mb-1">Data Início (Opcional)</label>
+                            <input type="date" id="startDate" th:field="*{startDate}"
+                                   class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                        </div>
+                        <div>
+                            <label for="endDate" class="block text-sm font-medium text-muted-foreground mb-1">Data Fim (Opcional)</label>
+                            <input type="date" id="endDate" th:field="*{endDate}"
+                                   class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                        </div>
+                    </div>
+
+                    <!-- Seção de Treinos Dinâmicos -->
+                    <div class="border-t border-border pt-6">
+                        <h3 class="text-xl font-semibold text-foreground mb-4">Treinos</h3>
+                        <div id="trainings-list" class="space-y-6">
+                            
+                            <!-- Loop para renderizar treinos existentes (TrainingDTO) -->
+                            <div th:each="training, tStat : *{trainingDtos}" class="dynamic-item p-4 border border-border rounded-lg space-y-4 bg-background/30">
+                                <span class="remove-btn remove-btn-top" onclick="this.parentElement.remove()">X</span>
+                                <div>
+                                    <label class="block text-sm font-medium text-muted-foreground mb-1">Nome do Treino</label>
+                                    <input type="text" th:field="*{trainingDtos[__${tStat.index}__].name}" class="w-full p-3 rounded-md bg-background border border-border" placeholder="Ex: Treino A - Peito e Tríceps">
+                                </div>
+                                <div>
+                                     <label class="block text-sm font-medium text-muted-foreground mb-1">Grupos Musculares (Opcional)</label>
+                                     <input type="text" th:field="*{trainingDtos[__${tStat.index}__].targetMuscleGroups}" class="w-full p-3 rounded-md bg-background border border-border" placeholder="Ex: PEITO, TRICEPS (separado por vírgula)">
+                                </div>
+
+                                <div class="sets-list space-y-3 pt-3 border-t border-border">
+                                    <h4 class="text-sm font-semibold text-foreground">Exercícios/Sets</h4>
+                                    
+                                    <!-- Loop para renderizar sets existentes (TrainingSetDTO) -->
+                                    <div th:each="set, eStat : *{trainingDtos[__${tStat.index}__].trainingSets}" class="dynamic-item grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-background/50 rounded-md border border-border">
+                                        <div class="col-span-2 md:col-span-3">
+                                            <label class="text-xs font-medium text-muted-foreground">Exercício</label>
+                                            <select th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].exerciseId}" class="w-full p-2 text-sm rounded-md bg-background border border-border">
+                                                <option th:each="ex : ${exercises}" th:value="${ex.id}" th:text="${ex.name}"></option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-muted-foreground">Séries</label>
+                                            <input type="number" th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].sets}" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Ex: 3">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-muted-foreground">Reps</label>
+                                            <input type="text" th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].repetitions}" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Ex: 10-12">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-muted-foreground">Descanso (s)</label>
+                                            <input type="number" th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].restTimeSeconds}" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Ex: 60">
+                                        </div>
+                                        <div class="col-span-2 md:col-span-3">
+                                            <label class="text-xs font-medium text-muted-foreground">Técnica</label>
+                                            <select th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].technique}" class="w-full p-2 text-sm rounded-md bg-background border border-border">
+                                                <option value="">Nenhuma</option>
+                                                <option th:each="t : ${trainingTechniques}" th:value="${t.name()}" th:text="${t.name()}"></option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-muted-foreground">Carga (Kg)</label>
+                                            <input type="number" step="0.5" th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].loadInKg}" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Opcional">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs font-medium text-muted-foreground">Duração (s)</label>
+                                            <input type="number" th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].durationSeconds}" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Opcional">
+                                        </div>
+                                        <span class="remove-btn" onclick="this.parentElement.remove()">X</span>
+                                    </div>
+
+                                </div>
+                                <button type="button" class="add-exercise-set-btn inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-primary/10 text-primary text-sm font-medium transition-colors">
+                                    + Adicionar Exercício
+                                </button>
+                            </div>
+
+                        </div>
+                        <button type="button" id="add-training-btn"
+                                class="mt-4 inline-flex items-center justify-center px-4 py-2 h-9 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-medium transition-colors">
+                            Adicionar Treino
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <button type="submit" 
+                    class="w-full mt-6 px-4 py-3 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-glow-primary transition-colors">
+                Atualizar Conteúdo
+            </button>
+            
+            <!-- Scripts para formulários dinâmicos -->
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                
+                const allExercises = /*[[${exercises}]]*/ null;
+                const allTechniques = /*[[${trainingTechniques}]]*/ null;
+                const trainingsList = document.getElementById('trainings-list');
+                
+                let trainingIdx = /*[[${#lists.size(contentDto.trainingDtos)}]]*/ 0;
+                let contentBlockIdx = /*[[${contentDto.contentBlocks != null ? #lists.size(contentDto.contentBlocks) : 0}]]*/ 0;
+
+                // --- LÓGICA PARA BLOCOS DE CONTEÚDO (MATERIAL) ---
+                function createContentBlockHtml(cIdx) {
+                    // *** CORRIGIDO DE .content PARA .value ***
+                    return `
+                    <div class="dynamic-item p-4 border border-border rounded-lg space-y-3 bg-background/50">
+                        <span class="remove-btn remove-btn-top" onclick="this.parentElement.remove()">X</span>
+                        <div>
+                            <label class="text-xs font-medium text-muted-foreground">Tipo de Bloco</label>
+                            <select name="contentBlocks[${cIdx}].type" class="w-full p-2 text-sm rounded-md bg-background border border-border">
+                                <option value="TEXT">Texto</option>
+                                <option value="IMAGE">Imagem (URL)</option>
+                                <option value="VIDEO">Vídeo (URL)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-muted-foreground">Conteúdo (Texto ou URL)</label>
+                            <textarea name="contentBlocks[${cIdx}].value" rows="3" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Insira o texto ou a URL..."></textarea>
+                        </div>
+                    </div>
+                    `;
+                }
+
+                // --- LÓGICA PARA TREINOS E SÉRIES (ROTINA) ---
+                function createExerciseSetHtml(tIdx, eIdx) {
+                    let exOptions = allExercises ? allExercises.map(ex => `<option value="${ex.id}">${ex.name}</option>`).join('') : '';
+                    let techOptions = '<option value="">Nenhuma</option>' + (allTechniques ? allTechniques.map(t => `<option value="${t.name()}">${t.name()}</option>`).join('') : '');
+
+                    return `
+                    <div class="dynamic-item grid grid-cols-2 md:grid-cols-3 gap-3 p-3 bg-background/50 rounded-md border border-border">
+                        <div class="col-span-2 md:col-span-3">
+                            <label class="text-xs font-medium text-muted-foreground">Exercício</label>
+                            <select name="trainingDtos[${tIdx}].trainingSets[${eIdx}].exerciseId" class="w-full p-2 text-sm rounded-md bg-background border border-border">
+                                ${exOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-muted-foreground">Séries</label>
+                            <input type="number" name="trainingDtos[${tIdx}].trainingSets[${eIdx}].sets" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Ex: 3">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-muted-foreground">Reps</label>
+                            <input type="text" name="trainingDtos[${tIdx}].trainingSets[${eIdx}].repetitions" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Ex: 10-12">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-muted-foreground">Descanso (s)</label>
+                            <input type="number" name="trainingDtos[${tIdx}].trainingSets[${eIdx}].restTimeSeconds" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Ex: 60">
+                        </div>
+                        <div class="col-span-2 md:col-span-3">
+                            <label class="text-xs font-medium text-muted-foreground">Técnica</label>
+                            <select name="trainingDtos[${tIdx}].trainingSets[${eIdx}].technique" class="w-full p-2 text-sm rounded-md bg-background border border-border">
+                                ${techOptions}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-muted-foreground">Carga (Kg)</label>
+                            <input type="number" step="0.5" name="trainingDtos[${tIdx}].trainingSets[${eIdx}].loadInKg" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Opcional">
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-muted-foreground">Duração (s)</label>
+                            <input type="number" name="trainingDtos[${tIdx}].trainingSets[${eIdx}].durationSeconds" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Opcional">
+                        </div>
+                        <span class="remove-btn" onclick="this.parentElement.remove()">X</span>
+                    </div>
+                    `;
+                }
+                
+                function createTrainingHtml(tIdx) {
+                    return `
+                    <div class="dynamic-item p-4 border border-border rounded-lg space-y-4 bg-background/30">
+                        <span class="remove-btn remove-btn-top" onclick="this.parentElement.remove()">X</span>
+                        <div>
+                            <label class="block text-sm font-medium text-muted-foreground mb-1">Nome do Treino</label>
+                            <input type="text" name="trainingDtos[${tIdx}].name" class="w-full p-3 rounded-md bg-background border border-border" placeholder="Ex: Treino A - Peito e Tríceps">
+                        </div>
+                        <div>
+                             <label class="block text-sm font-medium text-muted-foreground mb-1">Grupos Musculares (Opcional)</label>
+                             <input type="text" name="trainingDtos[${tIdx}].targetMuscleGroups" class="w-full p-3 rounded-md bg-background border border-border" placeholder="Ex: PEITO, TRICEPS (separado por vírgula)">
+                        </div>
+                        <div class="sets-list space-y-3 pt-3 border-t border-border">
+                            <h4 class="text-sm font-semibold text-foreground">Exercícios/Sets</h4>
+                        </div>
+                        <button type="button" class="add-exercise-set-btn inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-primary/10 text-primary text-sm font-medium transition-colors">
+                            + Adicionar Exercício
+                        </button>
+                    </div>
+                    `;
+                }
+
+                // --- Event Listener Global ---
+                document.body.addEventListener('click', function(e) {
+                    
+                    if (e.target && e.target.id === 'add-training-btn') {
+                        const newTraining = document.createElement('div');
+                        newTraining.innerHTML = createTrainingHtml(trainingIdx);
+                        trainingsList.appendChild(newTraining.firstElementChild);
+                        trainingIdx++;
+                    }
+                    
+                    if (e.target && e.target.classList.contains('add-exercise-set-btn')) {
+                        const setsList = e.target.previousElementSibling;
+                        const trainingItem = e.target.closest('.dynamic-item');
+                        
+                        const tIdxName = trainingItem.querySelector('input[type="text"]').name;
+                        const tIdx = tIdxName.match(/\[(\d+)\]/)[1]; 
+                        
+                        const eIdx = setsList.children.length -1; 
+                        
+                        const newExerciseSet = document.createElement('div');
+                        newExerciseSet.innerHTML = createExerciseSetHtml(tIdx, eIdx);
+                        setsList.appendChild(newExerciseSet.firstElementChild);
+                    }
+                    
+                    if (e.target && e.target.id === 'add-content-block-btn') {
+                        const blocksList = document.getElementById('content-blocks-list');
+                        const newBlock = document.createElement('div');
+                        newBlock.innerHTML = createContentBlockHtml(contentBlockIdx);
+                        blocksList.appendChild(newBlock.firstElementChild);
+                        contentBlockIdx++;
+                    }
+                });
+                
+                /*]]>*/
+            </script>
+            
+        </form>
+    </div>
+</main>
+</html>

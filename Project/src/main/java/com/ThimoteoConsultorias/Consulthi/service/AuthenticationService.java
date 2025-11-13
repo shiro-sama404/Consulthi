@@ -6,13 +6,11 @@ import com.ThimoteoConsultorias.Consulthi.model.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationService implements UserDetailsService 
+public class AuthenticationService /*implements UserDetailsService*/ 
 {
     private final PasswordEncoder passwordEncoder;
     private final UserService  userService;
@@ -32,13 +30,6 @@ public class AuthenticationService implements UserDetailsService
         }
 
         throw new IllegalStateException("Usuário não autenticado");
-    }
-
-    @Override
-    public AppUser loadUserByUsername(String username) throws UsernameNotFoundException
-    {
-        User user = userService.getUserByUsername(username);
-        return new AppUser(user);
     }
 
     public boolean checkPasswordByUsername(String rawPassword, String username)

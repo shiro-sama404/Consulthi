@@ -106,7 +106,7 @@ public class AdministratorController
      * O cliente desktop usará este endpoint.
      */
     @PostMapping("/api/approve/{userId}")
-    @ResponseBody // Retorna 200 OK sem corpo
+    @ResponseBody // Retorna 200 OK (sem corpo)
     public ResponseEntity<Void> approveProfessionalApi(@PathVariable Long userId)
     {
         administratorService.approveProfessionalRegistration(userId);

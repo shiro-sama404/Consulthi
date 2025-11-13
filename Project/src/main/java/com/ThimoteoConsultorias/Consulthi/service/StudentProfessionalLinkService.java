@@ -10,8 +10,6 @@ import com.ThimoteoConsultorias.Consulthi.repository.StudentProfessionalLinkRepo
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -30,7 +28,6 @@ public class StudentProfessionalLinkService
     private final NotificationService notificationService;
     private final ProfessionalService professionalService;
     private final UserService userService;
-    //private UserService userService;
 
     // ----------------------------------------------------
     // 2. CONSTRUTOR
@@ -50,13 +47,6 @@ public class StudentProfessionalLinkService
         this.professionalService = professionalService;
         this.userService = userService;
     }
-    
-    //@Autowired
-    //@Lazy
-    //public void setUserService(UserService userService)
-    //{
-    //    this.userService = userService;
-    //}
 
     // ----------------------------------------------------
     // 3. MÉTODOS DE DOMÍNIO

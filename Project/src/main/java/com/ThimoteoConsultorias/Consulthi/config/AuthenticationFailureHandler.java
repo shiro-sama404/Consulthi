@@ -31,9 +31,9 @@ public class AuthenticationFailureHandler extends SimpleUrlAuthenticationFailure
     )
     throws IOException, ServletException
     {
-        System.out.println("nha");
+        System.out.println("Entrou 123");
         String username = request.getParameter("username");
-        System.out.println("nha2");
+        System.out.println("Saiu 123");
 
         if (username != null) 
             userService.registerFailedLogin(username);

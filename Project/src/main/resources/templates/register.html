@@ -1,72 +1,154 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Solicitação de Cadastro - ConsulThi</title>
-    <script th:src="@{/webjars/htmx.org/1.9.10/htmx.min.js}"></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 8px; box-sizing: border-box; }
-        .error { color: red; font-weight: bold; }
-        .section-header { background-color: #f0f0f0; padding: 5px; margin-bottom: 10px; border-radius: 4px; }
-    </style>
+    <title>Solicitação de Cadastro</title>
 </head>
-<body>
 
-    <h1>Nova Solicitação de Cadastro (RF01)</h1>
+<main layout:fragment="content" class="min-h-screen flex items-center justify-center pt-20 pb-10">
+    
+    <div class="w-full max-w-2xl bg-card p-8 rounded-xl shadow-2xl border border-border">
 
-    <div th:if="${error}" class="error" th:text="${error}"></div>
-    <form th:action="@{/register}" th:object="${userDto}" method="post">
-        
-        <div class="section-header">
-            <h2>1. Dados Comuns</h2>
-        </div>
-        
-        <div class="form-group">
-            <label for="fullName">Nome Completo:</label>
-            <input type="text" id="fullName" th:field="*{fullName}" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="dateBirth">Data de Nascimento:</label>
-            <input type="date" id="dateBirth" th:field="*{dateBirth}" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="username">Nome de Usuário:</label>
-            <input type="text" id="username" th:field="*{username}" required>
+        <h1 class="text-3xl font-bold text-center mb-6 text-foreground">
+            Solicitação de <span class="bg-gradient-primary bg-clip-text text-transparent">Cadastro</span>
+        </h1>
+
+        <div th:if="${error}" class="bg-destructive/10 text-destructive border border-destructive p-3 rounded-md mb-6 text-center">
+            <p th:text="${error}" class="font-semibold"></p>
         </div>
 
-        <div class="form-group">
-            <label for="rawPassword">Senha:</label>
-            <input type="password" id="rawPassword" th:field="*{rawPassword}" required>
-        </div>
-
-        <div class="section-header">
-            <h2>2. Perfil e Vínculo</h2>
-        </div>
-
-        <div class="form-group">
-            <label for="roles">Tipo de Perfil (Role):</label>
-            <select id="roles" th:field="*{roles}" 
-                    hx-get="@{/register/role-fields}"
-                    hx-target="#role-specific-fields"
-                    hx-swap="outerHTML"
-                    hx-trigger="change" multiple required>
-                <option th:each="role : ${roles}" 
-                        th:value="${role.name()}" 
-                        th:text="${role.name()}">ROLE_NAME</option>
-            </select>
-            <small>Segure CTRL para selecionar, ex: STUDENT e/ou outras roles.</small>
-        </div>
-        
-        <div id="role-specific-fields">
+        <form th:action="@{/register}" th:object="${userDto}" method="post" class="space-y-6">
+            
+            <!-- SEÇÃO 1: Dados Comuns -->
+            <div class="border-b border-border pb-4">
+                <h2 class="text-xl font-semibold text-foreground mb-2">1. Informações Pessoais e de Acesso</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="fullName" class="block text-sm font-medium text-muted-foreground mb-1">Nome Completo</label>
+                    <input type="text" id="fullName" th:field="*{fullName}" required
+                           class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground placeholder-muted-foreground"
+                           placeholder="Seu nome">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dateBirth" class="block text-sm font-medium text-muted-foreground mb-1">Data de Nascimento</label>
+                    <input type="date" id="dateBirth" th:field="*{dateBirth}" required
+                           class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                </div>
             </div>
 
-        <button type="submit">Enviar Solicitação</button>
-    </form>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="username" class="block text-sm font-medium text-muted-foreground mb-1">Nome de Usuário</label>
+                    <input type="text" id="username" th:field="*{username}" required
+                           class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground placeholder-muted-foreground"
+                           placeholder="Username para login">
+                </div>
+
+                <div class="form-group">
+                    <label for="rawPassword" class="block text-sm font-medium text-muted-foreground mb-1">Senha</label>
+                    <input type="password" id="rawPassword" th:field="*{rawPassword}" required
+                           class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                           placeholder="Mínimo 6 caracteres">
+                </div>
+            </div>
+
+            <!-- SEÇÃO 2: Perfil e Vínculo (RF01) -->
+            <div class="border-b border-border pb-4 pt-4">
+                <h2 class="text-xl font-semibold text-foreground mb-2">2. Tipo de Perfil e Vínculos</h2>
+            </div>
+
+            <div class="form-group">
+                <label for="roles" class="block text-sm font-medium text-muted-foreground mb-1">Tipo de Perfil (Role)</label>
+                <select id="roles" th:field="*{roles}" 
+                        onchange="handleRoleChange()"
+                        multiple required
+                        class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground h-24">
+                    <option th:each="role : ${roles}" 
+                            th:value="${role.name()}" 
+                            th:text="${role.name()}">ROLE_NAME</option>
+                </select>
+                <small class="text-muted-foreground block mt-1">Segure CTRL para selecionar múltiplas funções.</small>
+            </div>
+            
+            <div id="role-specific-fields" class="space-y-6 pt-4 border-t border-border">
+                <!-- Campos de Profissional (Escondidos por padrão) -->
+                <div id="professional-fields" style="display: none;" class="space-y-6 p-4 bg-background/50 rounded-lg border border-border">
+                    <h3 class="class_text-lg font-semibold text-primary">Informações Profissionais</h3>
+                    <div>
+                        <label for="register" class="block text-sm font-medium text-muted-foreground mb-1">Nº de Registro (CREF, CRN, CRP, etc.)</label>
+                        <input type="text" id="register" th:field="*{register}"
+                               class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                               placeholder="Seu número de registro profissional">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-muted-foreground mb-2">Áreas de Expertise</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-48 overflow-y-auto p-3 bg-background rounded-md border border-border">
+                            <div th:each="area : ${allExpertiseAreas}" class="flex items-center gap-2">
+                                <input type="checkbox" th:field="*{expertiseAreas}" th:value="${area.name()}" th:id="${'area-' + area.name()}"
+                                       class="h-4 w-4 rounded border-border text-primary focus:ring-primary">
+                                <label th:for="${'area-' + area.name()}" class="text-sm text-foreground" th:text="${area.name()}"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos de Estudante (Escondidos por padrão) -->
+                <div id="student-fields" style="display: none;" class="space-y-6 p-4 bg-background/50 rounded-lg border border-border">
+                    <h3 class="text-lg font-semibold text-secondary">Vincular a Profissionais</h3>
+                    <div>
+                        <label for="selectedProfessionalIds" class="block text-sm font-medium text-muted-foreground mb-1">Selecione os profissionais (Opcional)</label>
+                        <select id="selectedProfessionalIds" th:field="*{selectedProfessionalIds}" multiple
+                                class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground h-32">
+                            <option th:each="prof : ${availableProfessionals}" 
+                                    th:value="${prof.id}" 
+                                    th:text="${prof.user.fullName} + ' (' + ${prof.user.roles} + ')'">
+                                Nome do Profissional (ROLE)
+                            </option>
+                        </select>
+                        <small class="text-muted-foreground block mt-1">Segure CTRL para selecionar múltiplos profissionais.</small>
+                    </div>
+                </div>
+            
+            </div>
+
+            <button type="submit" class="w-full mt-6 px-4 py-3 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-glow-primary transition-colors">
+                Enviar Solicitação de Cadastro
+            </button>
+            
+            <p class="text-center text-sm mt-6 text-muted-foreground">
+                Já tem conta? 
+                <a th:href="@{/login}" class="text-primary hover:underline font-semibold">Faça Login</a>
+            </p>
+        </form>
+    </div>
     
-    </body>
+    <!-- Script JS para campos dinâmicos -->
+    <script>
+        function handleRoleChange() {
+            const select = document.getElementById('roles');
+            const professionalFields = document.getElementById('professional-fields');
+            const studentFields = document.getElementById('student-fields');
+
+            // Converte as opções selecionadas em um Set para fácil verificação
+            const selectedRoles = new Set(Array.from(select.selectedOptions).map(option => option.value));
+
+            // Verifica se alguma role profissional foi selecionada
+            const isProfessional = selectedRoles.has('COACH') || 
+                                   selectedRoles.has('NUTRITIONIST') || 
+                                   selectedRoles.has('PSYCHOLOGIST');
+            
+            // Verifica se a role de estudante foi selecionada
+            const isStudent = selectedRoles.has('STUDENT');
+
+            // Mostra ou esconde os campos
+            professionalFields.style.display = isProfessional ? 'block' : 'none';
+            studentFields.style.display = isStudent ? 'block' : 'none';
+        }
+        
+        document.addEventListener('DOMContentLoaded', handleRoleChange);
+    </script>
+</main>
 </html>

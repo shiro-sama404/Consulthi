@@ -52,7 +52,7 @@ public class StudentController
      * Exibe as Rotinas Ativas, Dietas e Materiais liberados.
      */
     @GetMapping("/dashboard")
-    public String studentHome(@AuthenticationPrincipal Long currentUserId, Model model)
+    public String studentHome(@AuthenticationPrincipal(expression = "id") Long currentUserId, Model model)
     {
         List<RoutineInstance> activeRoutines = routineInstanceService.getActiveRoutinesByStudent(currentUserId);
         
@@ -86,7 +86,7 @@ public class StudentController
      * Garante que o aluno TEM ACESSO e carrega o histórico se for Rotina.
      */
     @GetMapping("/content/{contentId}")
-    public String viewContent(@AuthenticationPrincipal Long currentUserId, @PathVariable Long contentId, Model model) {
+    public String viewContent(@AuthenticationPrincipal(expression = "id") Long currentUserId, @PathVariable Long contentId, Model model) {
         
         try
         {
@@ -135,7 +135,7 @@ public class StudentController
      */
     @PostMapping("/routine/{instanceId}/log-training/{trainingId}")
     public String logTrainingCompletion(
-            @AuthenticationPrincipal Long currentUserId,
+            @AuthenticationPrincipal(expression = "id") Long currentUserId,
             @PathVariable Long instanceId,
             @PathVariable Long trainingId,
             @RequestParam(required = false) String notes,
@@ -166,7 +166,7 @@ public class StudentController
      * Implementa a remoção do vínculo pelo Aluno (Solicitante).
      */
     @PostMapping("/links/remove/{linkId}")
-    public String removeLinkByStudent(@PathVariable Long linkId, @AuthenticationPrincipal Long currentUserId, RedirectAttributes redirectAttributes) {
+    public String removeLinkByStudent(@PathVariable Long linkId, @AuthenticationPrincipal(expression = "id") Long currentUserId, RedirectAttributes redirectAttributes) {
         try 
         {
             linkService.removeLink(linkId, currentUserId);

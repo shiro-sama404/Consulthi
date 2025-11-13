@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Meu Perfil</title>
+</head>
+
+<main layout:fragment="content" class="pt-24 pb-12">
+    <div class="container mx-auto px-4 max-w-3xl">
+
+        <h1 class="text-4xl font-bold text-foreground mb-8">
+            Meu <span class="bg-gradient-primary bg-clip-text text-transparent">Perfil</span>
+        </h1>
+
+        <!-- Seção de Informações -->
+        <div class="bg-card border border-border rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-foreground mb-6">Informações da Conta</h2>
+            
+            <div th:if="${user}" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-muted-foreground mb-1">Nome Completo</label>
+                    <p class="text-lg text-foreground" th:text="${user.fullName}">Nome do Usuário</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-muted-foreground mb-1">Nome de Usuário (Login)</label>
+                    <p class="text-lg text-foreground" th:text="${user.username}">username</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-muted-foreground mb-1">Data de Nascimento</label>
+                    <p class="text-lg text-foreground" th:text="${#temporals.format(user.dateBirth, 'dd/MM/yyyy')}">01/01/1990</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-muted-foreground mb-1">Perfis (Roles)</label>
+                    <div class="flex flex-wrap gap-2">
+                        <span th:each="role : ${user.roles}" th:text="${role.name()}"
+                              class="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                            ROLE
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${user == null}">
+                <p class="text-muted-foreground">Não foi possível carregar as informações do usuário.</p>
+            </div>
+        </div>
+
+        <!-- Seção de Perigo (Desativação RF04) -->
+        <div class="bg-card border border-destructive/50 rounded-xl shadow-lg p-8">
+            <h2 class="text-2xl font-semibold text-destructive mb-4">Zona de Risco</h2>
+            
+            <p class="text-muted-foreground mb-6">
+                Ao desativar sua conta, ela será marcada para exclusão. Esta ação é irreversível após 30 dias.
+                Você será desconectado imediatamente.
+            </p>
+            
+            <!-- Formulário de Desativação RF04 -->
+            <form th:action="@{/user/deactivate}" method="post" onsubmit="return confirm('Tem certeza que deseja desativar sua conta? Esta ação não pode ser desfeita facilmente.')">
+                <button type="submit" 
+                        class="inline-flex items-center justify-center px-6 py-2.5 h-10 rounded-md bg-destructive hover:bg-destructive/80 text-primary-foreground font-medium transition-colors">
+                    Desativar Minha Conta
+                </button>
+            </form>
+        </div>
+
+    </div>
+</main>
+</html>

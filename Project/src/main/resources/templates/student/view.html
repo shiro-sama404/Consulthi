@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title th:text="${content.name ?: 'Conteúdo'}">Visualizar Conteúdo</title>
+</head>
+
+<main layout:fragment="content" class="pt-24 pb-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-foreground" th:text="${content.name}"></h1>
+            <p class="text-lg text-muted-foreground mt-2" th:text="${content.description}"></p>
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-sm font-medium text-muted-foreground">Criado por:</span>
+                <span class="text-sm font-semibold text-primary" th:text="${content.creator.user.fullName}"></span>
+            </div>
+        </div>
+        
+        <div th:if="${message}" class="bg-primary/10 text-primary border border-primary p-3 rounded-md mb-6 text-center">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${info}" class="bg-accent/10 text-accent border border-accent p-3 rounded-md mb-6 text-center">
+            <p th:text="${info}"></p>
+        </div>
+
+        <!-- Conteúdo Dinâmico Baseado no Tipo -->
+        <div th:switch="${content.contentType?.name()}">
+
+            <!-- ======================= -->
+            <!-- Caso 1: ROTINA (RF06)   -->
+            <!-- ======================= -->
+            <div th:case="'ROUTINE'" th:with="routine=${content}">
+                
+                <div class="bg-card border border-border rounded-xl shadow-lg p-8 mb-8">
+                    <h2 class="text-2xl font-semibold text-foreground mb-6">Detalhes da Rotina</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-muted-foreground mb-1">Nível</label>
+                            <p class="text-lg text-foreground" th:text="${routine.routineLevel}"></p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-muted-foreground mb-1">Objetivo</label>
+                            <div class="flex flex-wrap gap-2">
+                                <span th:each="goal : ${routine.goals}" th:text="${goal}"
+                                      class="px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${currentInstance}">
+                    <h2 class="text-3xl font-semibold text-foreground mb-6">Meus Treinos</h2>
+                    <div class="space-y-6">
+                        <div th:each="training : ${currentInstance.routine.trainings}" 
+                             class="bg-card border border-border rounded-xl shadow-lg p-8">
+                            
+                            <h3 class="text-2xl font-bold text-primary mb-4" th:text="${training.name}"></h3>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span th:each="group : ${training.targetMuscleGroups}" th:text="${group}"
+                                      class="px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-medium">
+                                </span>
+                            </div>
+
+                            <div class="space-y-4 mb-6">
+                                <div th:each="set : ${training.trainingSets}" class="border-b border-border pb-3">
+                                    <h4 class="text-lg font-semibold text-foreground" th:text="${set.exercise.name}"></h4>
+                                    <p class="text-muted-foreground">
+                                        <span th:text="${set.sets}"></span> séries x 
+                                        <span th:text="${set.repetitions}"></span> reps 
+                                        (<span th:text="${set.restTimeSeconds}"></span>s descanso)
+                                    </p>
+                                    <small class="text-accent" th:if="${set.technique}" th:text="${set.technique}"></small>
+                                    <div classf="text-sm text-muted-foreground mt-1">
+                                        <span th:if="${set.loadInKg}" th:text="|Carga: ${set.loadInKg}kg  |" class="mr-2"></span>
+                                        <span th:if="${set.durationSeconds}" th:text="|Duração: ${set.durationSeconds}s|"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <form th:action="@{/student/routine/{instanceId}/log-training/{trainingId}(instanceId=${currentInstance.id}, trainingId=${training.id})}" method="post">
+                                <div class="mb-4">
+                                    <label th:for="|notes-${training.id}|" class="block text-sm font-medium text-muted-foreground mb-1">
+                                        Notas sobre o treino (opcional)
+                                    </label>
+                                    <textarea th:id="|notes-${training.id}|" name="notes" rows="2"
+                                              class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                                              placeholder="Ex: Aumentei a carga no supino..."></textarea>
+                                </div>
+                                <button type="submit"
+                                        class="inline-flex items-center justify-center w-full sm:w-auto px-6 py-2.5 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-glow-primary transition-colors">
+                                    Marcar Treino como Concluído
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div th:if="${not #lists.isEmpty(history)}" class="mt-12">
+                     <h2 class="text-3xl font-semibold text-foreground mb-6">Histórico de Execuções</h2>
+                     <div class="bg-card border border-border rounded-xl shadow-lg p-8">
+                         <ul class="space-y-4">
+                             <li th:each="entry : ${history}" class="border-b border-border pb-3">
+                                 <p class="font-semibold text-foreground">
+                                     Treino: <span th:text="${entry.training.name}" class="text-primary"></span>
+                                 </p>
+                                 <p class="text-sm text-muted-foreground">
+                                     Concluído em: <span th:text="${#temporals.format(entry.executionDateTime, 'dd/MM/yyyy HH:mm')}"></span>
+                                 </p>
+                                 <p class="text-sm text-foreground mt-1" th:if="${entry.studentNotes}" th:text="|Notas: ${entry.studentNotes}|"></p>
+                             </li>
+                         </ul>
+                     </div>
+                </div>
+
+            </div>
+
+            <!-- ======================= -->
+            <!-- Caso 2: DIETA           -->
+            <!-- ======================= -->
+            <div th:case="'DIET'" th:with="diet=${content}">
+                <div class="bg-card border border-border rounded-xl shadow-lg p-8">
+                    <div>
+                        <label class="block text-sm font-medium text-muted-foreground mb-2">Plano Alimentar</label>
+                        <div class="prose prose-invert max-w-none bg-background p-4 rounded-md border border-border"
+                             th:utext="${#strings.replace(diet.mealsEspecifications, T(java.lang.System).getProperty('line.separator'), '&lt;br/&gt;')}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= -->
+            <!-- Caso 3: MATERIAL        -->
+            <!-- ======================= -->
+            <div th:case="'MATERIAL'" th:with="material=${content}">
+                 <div class="bg-card border border-border rounded-xl shadow-lg p-8">
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span th:each="tag : ${material.tags}" th:text="${tag}"
+                              class="px-3 py-1 rounded-full bg-accent/10 text-accent text-sm font-medium">
+                        </span>
+                    </div>
+                     
+                    <!-- Renderização dos Blocos de Conteúdo -->
+                    <!-- *** CORRIGIDO DE .content PARA .value *** -->
+                    <div class="space-y-6">
+                        <div th:each="block : ${material.contentBlocks}">
+                            <div th:if="${block.type == 'TEXT'}">
+                                <!-- Usando utext e replace para quebras de linha -->
+                                <p class="text-foreground" th:utext="${#strings.replace(block.value, T(java.lang.System).getProperty('line.separator'), '&lt;br/&gt;')}"></p>
+                            </div>
+                            <div th:if="${block.type == 'IMAGE'}">
+                                <img th:src="${block.value}" alt="Imagem do material" class="w-full h-auto rounded-md border border-border"/>
+                            </div>
+                            <div th:if="${block.type == 'VIDEO'}" class="aspect-video">
+                                <iframe class="w-full h-full rounded-md border border-border" 
+                                        th:src="${block.value}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            <div th:case="*">
+                <p class="text-muted-foreground">Tipo de conteúdo não reconhecido.</p>
+            </div>
+        </div>
+
+    </div>
+</main>
+</html>

@@ -1,0 +1,31 @@
+# Começamos com a imagem do Maven que já tem Java
+FROM maven:3-eclipse-temurin-23
+
+# Instala o Node.js (para o Tailwind)
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
+
+WORKDIR /app
+
+# Copia e instala as dependências do npm
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Copia o Maven wrapper
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+
+# Copia o resto (o código será sobreposto pelo volume)
+COPY src ./src
+COPY tailwind.config.js .
+COPY start-dev.sh .
+
+# Dá permissão de execução ao nosso script de início
+RUN chmod +x start-dev.sh
+
+EXPOSE 8080
+
+# O entrypoint é nosso script customizado
+ENTRYPOINT ["./start-dev.sh"]

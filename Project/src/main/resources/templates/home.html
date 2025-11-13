@@ -1,25 +1,354 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
 <head>
-    <meta charset="UTF-8">
-    <title>Home - ConsulThi</title>
+    <title>Início</title>
+    <link rel="icon" href="/svg/ConsulThiIcon.svg">
 </head>
-<body>
-    <h1>Bem-vindo ao ConsulThi!</h1>
-    <p>Você está logado como: <span sec:authentication="name"></span></p>
 
-    <div sec:authorize="hasAuthority('ADMINISTRATOR')">
-        <p><a th:href="@{/admin}">Ir para Painel de Administração</a></p>
-    </div>
-    <div sec:authorize="hasAnyAuthority('COACH', 'NUTRITIONIST', 'PSYCHOLOGIST')">
-        <p><a th:href="@{/professional/dashboard}">Ir para Painel do Profissional</a></p>
-    </div>
-    <div sec:authorize="hasAuthority('STUDENT')">
-        <p><a th:href="@{/student/dashboard}">Ir para Dashboard do Aluno</a></p>
-    </div>
+<main layout:fragment="content">
 
-    <form th:action="@{/logout}" method="post">
-        <button type="submit">Sair</button>
-    </form>
-</body>
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img 
+                th:src="@{/img/hero-fitness.jpg}" 
+                alt="Treinamento Pessoal" 
+                class="w-full h-full object-cover opacity-40"
+            />
+            <div class="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 py-32 relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
+                    Transforme Seu Corpo,
+                    <span class="bg-gradient-primary bg-clip-text text-transparent"> Transforme Sua Vida</span>
+                </h1>
+                
+                <p class="text-xl md:text-2xl text-muted-foreground mb-8 animate-fade-in">
+                    Consultoria personalizada de treinamento e nutrição para alcançar seus objetivos de forma eficiente e sustentável.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
+                    <a th:href="@{/register}" 
+                       class="inline-flex items-center justify-center px-8 py-3 h-11 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary text-lg transition-colors">
+                        Agende Sua Avaliação
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 w-5 h-5"><line x1="5" x2="19" y1="12" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </a>
+                    <a href="#promocoes" 
+                       class="inline-flex items-center justify-center px-8 py-3 h-11 rounded-md border border-primary text-primary hover:bg-primary hover:text-primary-foreground text-lg transition-colors">
+                        Conheça os Planos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="promocoes" class="py-24 bg-gradient-warm">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    Ofertas <span class="text-primary">Especiais</span>
+                </h2>
+                <p class="text-xl text-muted-foreground">
+                    Escolha o plano ideal para sua jornada de transformação
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                
+                <div class="relative bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-glow-primary group rounded-lg">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <span class="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold shadow-glow-accent">
+                            Mais Popular
+                        </span>
+                    </div>
+                    
+                    <div class="p-6 pt-8 text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-primary"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold">Plano Intensivo</h3>
+                        <p class="text-base text-muted-foreground">3 meses de transformação completa</p>
+                    </div>
+                    
+                    <div class="p-6 pt-0 text-center">
+                        <div class="mb-6">
+                            <p class="text-muted-foreground line-through text-lg">R$ 1.200</p>
+                            <p class="text-4xl font-bold text-primary">R$ 1.000</p>
+                            <p class="text-sm text-muted-foreground mt-1">à vista ou em até 2x</p>
+                        </div>
+                        
+                        <ul class="space-y-3 mb-6 text-left">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Treinos personalizados</span></li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Dieta individualizada</span></li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Acompanhamento diário</span></li>
+                        </ul>
+                        
+                        <a th:href="@{/register}" class="inline-flex items-center justify-center w-full px-5 py-2.5 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary transition-colors font-medium">
+                            Garantir Vaga
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-glow-primary group rounded-lg">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <span class="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold shadow-glow-accent whitespace-nowrap">
+                            Melhor Custo-Benefício
+                        </span>
+                    </div>
+                    
+                    <div class="p-6 pt-8 text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-primary"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold">Plano Completo</h3>
+                        <p class="text-base text-muted-foreground">6 meses para resultados duradouros</p>
+                    </div>
+                    
+                    <div class="p-6 pt-0 text-center">
+                        <div class="mb-6">
+                            <p class="text-muted-foreground line-through text-lg">R$ 2.000</p>
+                            <p class="text-4xl font-bold text-primary">R$ 1.600</p>
+                            <p class="text-sm text-muted-foreground mt-1">à vista ou em até 4x</p>
+                        </div>
+                        
+                        <ul class="space-y-3 mb-6 text-left">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Tudo do Intensivo</span></li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Suplementação guiada</span></li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Reavaliações mensais</span></li>
+                        </ul>
+                        
+                        <a th:href="@{/register}" class="inline-flex items-center justify-center w-full px-5 py-2.5 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary transition-colors font-medium">
+                            Garantir Vaga
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-glow-primary group rounded-lg">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <span class="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold shadow-glow-accent">
+                            Mais Completo
+                        </span>
+                    </div>
+                    
+                    <div class="p-6 pt-8 text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-primary"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2z"/></svg>
+                        </div>
+                        <h3 class="text-2xl font-bold">Plano Elite</h3>
+                        <p class="text-base text-muted-foreground">12 meses de acompanhamento premium</p>
+                    </div>
+                    
+                    <div class="p-6 pt-0 text-center">
+                        <div class="mb-6">
+                            <p class="text-muted-foreground line-through text-lg">R$ 5.000</p>
+                            <p class="text-4xl font-bold text-primary">R$ 3.500</p>
+                            <p class="text-sm text-muted-foreground mt-1">à vista ou em até 6x</p>
+                        </div>
+                        
+                        <ul class="space-y-3 mb-6 text-left">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Tudo do Completo</span></li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Consultoria nutricional avançada</span></li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-primary"></div><span class="text-foreground">Suporte prioritário</span></li>
+                        </ul>
+                        
+                        <a th:href="@{/register}" class="inline-flex items-center justify-center w-full px-5 py-2.5 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary transition-colors font-medium">
+                            Garantir Vaga
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="servicos" class="py-24 bg-background">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    Treinamento & <span class="text-secondary">Nutrição</span>
+                </h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                    Metodologia comprovada que une treinos eficientes e alimentação estratégica
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div class="group bg-card border-border hover:border-secondary transition-all duration-300 overflow-hidden rounded-lg">
+                    <div class="relative h-64 overflow-hidden">
+                        <img 
+                            th:src="@{/img/training-session.jpg}" 
+                            alt="Treinamento Personalizado" 
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-card to-transparent"></div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold mb-4 text-secondary">Treinamento Personalizado</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-secondary mt-2 flex-shrink-0"></div><span class="text-foreground">Programas individualizados baseados em seus objetivos e nível atual</span></li>
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-secondary mt-2 flex-shrink-0"></div><span class="text-foreground">Ajustes semanais de volume, intensidade e frequência</span></li>
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-secondary mt-2 flex-shrink-0"></div><span class="text-foreground">Técnicas avançadas de periodização para máximos resultados</span></li>
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-secondary mt-2 flex-shrink-0"></div><span class="text-foreground">Acompanhamento via app com vídeos e orientações</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="group bg-card border-border hover:border-accent transition-all duration-300 overflow-hidden rounded-lg">
+                    <div class="relative h-64 overflow-hidden">
+                        <img 
+                            th:src="@{/img/nutrition-diet.jpg}" 
+                            alt="Nutrição Estratégica" 
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-card to-transparent"></div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold mb-4 text-accent">Nutrição Estratégica</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div><span class="text-foreground">Planos alimentares personalizados para suas preferências</span></li>
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div><span class="text-foreground">Cálculo preciso de macronutrientes e timing nutricional</span></li>
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div><span class="text-foreground">Estratégias para ganho de massa ou definição muscular</span></li>
+                            <li class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div><span class="text-foreground">Receitas práticas e lista de compras facilitada</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="depoimentos" class="py-24 bg-gradient-warm">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    Resultados <span class="text-primary">Comprovados</span>
+                </h2>
+                <p class="text-xl text-muted-foreground">
+                    Veja o que nossos alunos alcançaram
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <div class="bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-glow-primary rounded-lg">
+                    <div class="p-6">
+                        <div class="flex gap-1 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <p class="text-foreground mb-4 leading-relaxed">
+                            "A consultoria mudou minha vida! Não só emagreci, mas ganhei saúde, disposição e confiança. Os treinos e a dieta são totalmente personalizados e o acompanhamento é constante."
+                        </p>
+                        <div class="border-t border-border pt-4">
+                            <p class="font-bold text-foreground">Carlos Silva</p>
+                            <p class="text-sm text-primary font-semibold">Perdeu 18kg em 4 meses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-glow-primary rounded-lg">
+                    <div class="p-6">
+                        <div class="flex gap-1 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <p class="text-foreground mb-4 leading-relaxed">
+                            "Sempre tive dificuldade em ganhar peso. Com o plano do ConsulThi, finalmente consegui resultados reais. A orientação nutricional fez toda diferença!"
+                        </p>
+                        <div class="border-t border-border pt-4">
+                            <p class="font-bold text-foreground">Ana Beatriz</p>
+                            <p class="text-sm text-primary font-semibold">Ganhou 6kg de massa magra</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card border-border hover:border-primary transition-all duration-300 hover:shadow-glow-primary rounded-lg">
+                    <div class="p-6">
+                        <div class="flex gap-1 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 fill-accent text-accent"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </div>
+                        <p class="text-foreground mb-4 leading-relaxed">
+                            "Profissionalismo e conhecimento de alto nível. As estratégias de treino e nutrição são baseadas em ciência, não em modismos. Recomendo demais!"
+                        </p>
+                        <div class="border-t border-border pt-4">
+                            <p class="font-bold text-foreground">Roberto Mendes</p>
+                            <p class="text-sm text-primary font-semibold">Definição muscular excepcional</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="sobre" class="py-24 bg-background">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">
+                    Sobre <span class="text-primary">ConsulThi</span>
+                </h2>
+            </div>
+
+            <div class="max-w-5xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-16">
+                    <div class="order-2 md:order-1">
+                        <h3 class="text-3xl font-bold mb-6">
+                            Transformando vidas através da <span class="text-secondary">ciência do treinamento</span>
+                        </h3>
+                        <p class="text-foreground mb-4 leading-relaxed">
+                            Com mais de 5 anos de experiência em consultoria fitness, o ConsulThi nasceu da missão de democratizar o acesso a treinamento e nutrição de alta qualidade.
+                        </p>
+                        <p class="text-foreground mb-4 leading-relaxed">
+                            Nossa metodologia combina conhecimento científico atualizado, experiência prática e acompanhamento humanizado para garantir que você alcance seus objetivos de forma sustentável.
+                        </p>
+                        <p class="text-foreground leading-relaxed">
+                            Não acredito em fórmulas mágicas ou soluções milagrosas. Acredito em trabalho consistente, orientação correta e comprometimento mútuo para conquistar a melhor versão de você mesmo.
+                        </p>
+                    </div>
+                    
+                    <div class="order-1 md:order-2">
+                        <div class="relative">
+                            <div class="absolute -inset-4 bg-gradient-primary opacity-20 blur-2xl rounded-full"></div>
+                            <img 
+                                th:src="@{/img/trainer-profile.jpg}" 
+                                alt="Personal Trainer" 
+                                class="relative rounded-2xl shadow-2xl w-full"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-card border-border text-center p-8 rounded-lg">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-primary"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                        </div>
+                        <h4 class="text-3xl font-bold text-primary mb-2">5+</h4>
+                        <p class="text-foreground">Anos de Experiência</p>
+                    </div>
+                    <div class="bg-card border-border text-center p-8 rounded-lg">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-secondary/10 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-secondary"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h4 class="text-3xl font-bold text-secondary mb-2">50+</h4>
+                        <p class="text-foreground">Alunos Transformados</p>
+                    </div>
+                    <div class="bg-card border-border text-center p-8 rounded-lg">
+                        <div class="w-16 h-16 mx-auto mb-4 bg-accent/10 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8 text-accent"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                        </div>
+                        <h4 class="text-3xl font-bold text-accent mb-2">98%</h4>
+                        <p class="text-foreground">Taxa de Sucesso</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
 </html>

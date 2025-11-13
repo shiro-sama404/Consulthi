@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - ConsulThi">ConsulThi</title>
+    
+    <link rel="icon" th:href="@{/svg/ConsulThiIcon.svg}"/>
+
+    <link rel="stylesheet" th:href="@{/css/output.css}"/>
+    
+    <script th:src="@{/webjars/htmx.org/1.9.10/dist/htmx.min.js}"></script>
+    
+    <th:block layout:fragment="page-head"></th:block>
+
+</head>
+<body class="bg-background text-foreground">
+
+    <header sec:authorize="!isAuthenticated()" th:replace="~{fragments :: header-public}"></header>
+    <header sec:authorize="isAuthenticated()" th:replace="~{fragments :: header-authenticated}"></header>
+    
+    <main layout:fragment="content">
+        <!-- O conteúdo da página será injetado aqui -->
+    </main>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+
+</body>
+</html>

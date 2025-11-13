@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Meu Dashboard</title>
+</head>
+
+<main layout:fragment="content" class="pt-24 pb-12">
+    <div class="container mx-auto px-4">
+
+        <h1 class="text-4xl font-bold text-foreground mb-8">
+            Meu <span class="bg-gradient-primary bg-clip-text text-transparent">Dashboard</span>
+        </h1>
+
+        <!-- Mensagens de Feedback -->
+        <div th:if="${message}" class="bg-primary/10 text-primary border border-primary p-3 rounded-md mb-6 text-center">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="bg-destructive/10 text-destructive border border-destructive p-3 rounded-md mb-6 text-center">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- Seção de Materiais (RF06) -->
+        <section>
+            <h2 class="text-3xl font-semibold text-foreground mb-6 border-b border-border pb-3">
+                Materiais de Apoio
+            </h2>
+
+            <!-- TODO: Descomentar quando o 'educationalMaterials' for implementado no Controller -->
+            <!--
+            <div th:if="${not #lists.isEmpty(educationalMaterials)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div th:each="material : ${educationalMaterials}" class="bg-card border border-border rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-accent mb-2" th:text="${material.title}">Título do Material</h3>
+                    <a th:href="@{/student/content/{id}(id=${material.id})}"
+                       class="inline-flex items-center justify-center w-full px-4 py-2 h-10 rounded-md bg-accent hover:bg-accent/90 text-primary-foreground font-medium transition-colors">
+                        Ver Material
+                    </a>
+                </div>
+            </div>
+            -->
+
+            <div th:if="${#lists.isEmpty(educationalMaterials)}" 
+                 class="bg-card border border-border rounded-xl p-8 text-center">
+                <p class="text-muted-foreground">Nenhum material de apoio disponível.</p>
+            </div>
+        </section>
+
+        <!-- Seção de Rotinas Ativas (RF06) -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-foreground mb-6 border-b border-border pb-3">
+                Minhas Rotinas Ativas
+            </h2>
+            
+            <!-- Caso 1: Existem rotinas -->
+            <div th:if="${not #lists.isEmpty(activeRoutines)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div th:each="instance : ${activeRoutines}" 
+                     class="bg-card border border-border rounded-xl shadow-lg overflow-hidden transition-all hover:shadow-glow-primary hover:border-primary">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-primary mb-2" th:text="${instance.routine.title}">
+                            Título da Rotina
+                        </h3>
+                        <p class="text-muted-foreground mb-4" th:text="${instance.routine.goal}">
+                            Objetivo (ex: Hipertrofia)
+                        </p>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-sm font-medium text-muted-foreground">Criado por:</span>
+                            <span class="text-sm font-semibold text-foreground" th:text="${instance.professional.user.fullName}">
+                                Nome do Profissional
+                            </span>
+                        </div>
+                        <a th:href="@{/student/content/{id}(id=${instance.routine.id})}"
+                           class="inline-flex items-center justify-center w-full px-4 py-2 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-medium transition-colors">
+                            Acessar Treino
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Caso 2: Nenhuma rotina -->
+            <div th:if="${#lists.isEmpty(activeRoutines)}" 
+                 class="bg-card border border-border rounded-xl p-8 text-center">
+                <p class="text-muted-foreground">Nenhuma rotina de treino ativa no momento. Aguarde seu profissional liberar seu acesso.</p>
+            </div>
+        </section>
+
+        <!-- Seção de Dietas (RF06) -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-foreground mb-6 border-b border-border pb-3">
+                Minhas Dietas
+            </h2>
+            
+            <!-- TODO: Descomentar quando o 'activeDiets' for implementado no Controller -->
+            <!--
+            <div th:if="${not #lists.isEmpty(activeDiets)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div th:each="diet : ${activeDiets}" class="bg-card border border-border rounded-xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-secondary mb-2" th:text="${diet.title}">Título da Dieta</h3>
+                    <p class="text-muted-foreground mb-4" th:text="${diet.calories} + ' kcal'">Total de Calorias</p>
+                    <a th:href="@{/student/content/{id}(id=${diet.id})}"
+                       class="inline-flex items-center justify-center w-full px-4 py-2 h-10 rounded-md bg-secondary hover:bg-secondary/90 text-primary-foreground font-medium transition-colors">
+                        Ver Dieta
+                    </a>
+                </div>
+            </div>
+            -->
+            
+            <div th:if="${#lists.isEmpty(activeDiets)}" 
+                 class="bg-card border border-border rounded-xl p-8 text-center">
+                <p class="text-muted-foreground">Nenhuma dieta liberada no momento.</p>
+            </div>
+        </section>
+
+    </div>
+</main>
+</html>

@@ -41,7 +41,7 @@ public class ProfessionalController
      * Dashboard principal do Profissional.
      */
     @GetMapping("/dashboard")
-    public String professionalHome(@AuthenticationPrincipal Long currentUserId, Model model)
+    public String professionalHome(@AuthenticationPrincipal(expression = "id") Long currentUserId, Model model)
     {
         Professional professional = professionalService.getProfessionalById(currentUserId);
             
@@ -62,7 +62,7 @@ public class ProfessionalController
      * Processa a aceitação de uma solicitação de vínculo (RF01).
      */
     @PostMapping("/links/accept/{linkId}")
-    public String acceptStudentLink(@PathVariable Long linkId, @AuthenticationPrincipal Long currentUserId, RedirectAttributes redirectAttributes)
+    public String acceptStudentLink(@PathVariable Long linkId, @AuthenticationPrincipal(expression = "id") Long currentUserId, RedirectAttributes redirectAttributes)
     {
         linkService.acceptLink(linkId, currentUserId);
         redirectAttributes.addFlashAttribute("message", "Solicitação de aluno aceita com sucesso!");
@@ -73,7 +73,7 @@ public class ProfessionalController
      * Processa a remoção de um vínculo de aluno (RF05).
      */
     @PostMapping("/links/remove/{linkId}")
-    public String removeStudentLink(@PathVariable Long linkId, @AuthenticationPrincipal Long currentUserId, RedirectAttributes redirectAttributes)
+    public String removeStudentLink(@PathVariable Long linkId, @AuthenticationPrincipal(expression = "id") Long currentUserId, RedirectAttributes redirectAttributes)
     {
         linkService.removeLink(linkId, currentUserId);
         redirectAttributes.addFlashAttribute("message", "Acesso do aluno removido com sucesso (RF05).");

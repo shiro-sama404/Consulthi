@@ -9,6 +9,13 @@ spring:
     username: consulthi_user
     password: 'temp'
     driver-class-name: org.postgresql.Driver
+
+  devtools:
+    livereload.enabled: true
+    restart.exclude: static/**
+  
+  thymeleaf:
+    cache: false 
   
   jpa:
     hibernate:

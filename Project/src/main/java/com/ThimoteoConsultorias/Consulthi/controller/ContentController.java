@@ -55,7 +55,7 @@ public class ContentController
      * Exibe a lista de conteúdos criados pelo profissional.
      */
     @GetMapping
-    public String listContent(@AuthenticationPrincipal Long currentUserId, Model model) 
+    public String listContent(@AuthenticationPrincipal(expression = "id") Long currentUserId, Model model) 
     {
         Professional creator = professionalService.getProfessionalById(currentUserId);
         
@@ -83,7 +83,7 @@ public class ContentController
      * Rota de acesso para o criador (view) e para o aluno (consume - RF06).
      */
     @GetMapping("/view/{contentId}")
-    public String viewContent(@PathVariable Long contentId, @AuthenticationPrincipal Long currentUserId, Model model)
+    public String viewContent(@PathVariable Long contentId, @AuthenticationPrincipal(expression = "id") Long currentUserId, Model model)
     {
         try 
         {
@@ -113,15 +113,13 @@ public class ContentController
      * Exibe o formulário de atualização (GET).
      */
     @GetMapping("/edit/{contentId}")
-    public String showUpdateContentForm(@PathVariable Long contentId, @AuthenticationPrincipal Long currentUserId, Model model)
+    public String showUpdateContentForm(@PathVariable Long contentId, @AuthenticationPrincipal(expression = "id") Long currentUserId, Model model)
     {
-        // O Service validará se o currentUserId é o criador.
         try 
         {
             ContentDTO contentDto = contentService.getContentAsDTO(contentId, currentUserId); 
             
             model.addAttribute("contentDto", contentDto);
-            // Re-popula os enums e exercícios para o formulário
             model.addAttribute("routineLevels", RoutineLevel.values());
             model.addAttribute("goalTypes", GoalType.values());
             model.addAttribute("contentTags", ContentTag.values());
@@ -150,9 +148,12 @@ public class ContentController
      * Processa a criação de um novo conteúdo (Rotina, Dieta ou Material).
      */
     @PostMapping("/create")
-    public String createContent(@ModelAttribute ContentDTO contentDto, 
-                                @AuthenticationPrincipal Long currentUserId, 
-                                RedirectAttributes redirectAttributes)
+    public String createContent
+    (
+        @ModelAttribute ContentDTO contentDto, 
+        @AuthenticationPrincipal(expression = "id") Long currentUserId, 
+        RedirectAttributes redirectAttributes
+    )
     {
         try 
         {
@@ -176,10 +177,13 @@ public class ContentController
      * Processa a atualização de um conteúdo existente (POST/PUT - RF07).
      */
     @PostMapping("/edit/{contentId}")
-    public String updateContent(@PathVariable Long contentId, 
-                                @ModelAttribute ContentDTO contentDto, 
-                                @AuthenticationPrincipal Long currentUserId, 
-                                RedirectAttributes redirectAttributes) 
+    public String updateContent
+    (
+        @PathVariable Long contentId, 
+        @ModelAttribute ContentDTO contentDto, 
+        @AuthenticationPrincipal(expression = "id") Long currentUserId, 
+        RedirectAttributes redirectAttributes
+    ) 
     {
         try 
         {
@@ -204,7 +208,7 @@ public class ContentController
      */
     @PostMapping("/delete/{contentId}")
     public String deleteContent(@PathVariable Long contentId, 
-                                @AuthenticationPrincipal Long currentUserId, 
+                                @AuthenticationPrincipal(expression = "id") Long currentUserId, 
                                 RedirectAttributes redirectAttributes) 
     {
         try 

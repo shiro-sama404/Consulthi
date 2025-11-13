@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Ocorreu um Erro</title>
+</head>
+
+<main layout:fragment="content" class="min-h-screen flex items-center justify-center pt-20 pb-10">
+    
+    <div class="w-full max-w-lg bg-card p-8 rounded-xl shadow-2xl border border-destructive">
+        
+        <div class="text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-16 h-16 text-destructive mx-auto mb-4">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" x2="12" y1="8" y2="12"></line>
+                <line x1="12" x2="12.01" y1="16" y2="16"></line>
+            </svg>
+
+            <h1 class="text-3xl font-bold text-destructive mb-3" th:text="${errorName ?: 'Ocorreu um Erro'}">
+                Ocorreu um Erro
+            </h1>
+
+            <p class="text-muted-foreground mb-6" th:text="${errorMessage ?: 'Não foi possível processar sua solicitação.'}">
+                Não foi possível processar sua solicitação.
+            </p>
+            
+            <a th:href="@{/home}" class="inline-flex items-center justify-center px-6 py-2.5 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary font-medium transition-colors">
+                Voltar para a Home
+            </a>
+        </div>
+        
+    </div>
+</main>
+</html>

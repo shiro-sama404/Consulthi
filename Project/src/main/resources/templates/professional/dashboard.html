@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Dashboard do Profissional</title>
+</head>
+
+<main layout:fragment="content" class="pt-24 pb-12">
+    <div class="container mx-auto px-4">
+
+        <h1 class="text-4xl font-bold text-foreground mb-8" th:if="${professional}">
+            Bem-vindo, <span class="bg-gradient-primary bg-clip-text text-transparent" th:text="${professional.user.fullName}"></span>
+        </h1>
+
+        <!-- Mensagens de Feedback -->
+        <div th:if="${message}" class="bg-primary/10 text-primary border border-primary p-3 rounded-md mb-6 text-center">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="bg-destructive/10 text-destructive border border-destructive p-3 rounded-md mb-6 text-center">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- Links Rápidos -->
+        <div class="mb-12">
+            <a th:href="@{/professional/content}" 
+               class="inline-flex items-center justify-center px-6 py-3 h-11 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary font-medium transition-colors">
+                Gerenciar Meus Conteúdos
+            </a>
+        </div>
+
+        <!-- Seção de Aprovação (RF01) -->
+        <section class="mb-12">
+            <h2 class="text-3xl font-semibold text-foreground mb-6 border-b border-border pb-3">
+                Solicitações Pendentes
+            </h2>
+
+            <div class="bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+                <!-- Caso 1: Existem pendências -->
+                <div th:if="${not #lists.isEmpty(pendingRequests)}" class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-background border-b border-border">
+                            <tr>
+                                <th class="p-4 text-sm font-semibold text-muted-foreground">Aluno</th>
+                                <th class="p-4 text-sm font-semibold text-muted-foreground">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="link : ${pendingRequests}" class="border-b border-border last:border-b-0">
+                                <td class="p-4 text-foreground" th:text="${link.student.user.fullName}">
+                                    Nome do Aluno
+                                </td>
+                                <td class="p-4">
+                                    <form th:action="@{/professional/links/accept/{linkId}(linkId=${link.id})}" method="post">
+                                        <button type="submit"
+                                                class="inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors">
+                                            Aceitar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Caso 2: Nenhuma pendência -->
+                <div th:if="${#lists.isEmpty(pendingRequests)}" class="p-8 text-center">
+                    <p class="text-muted-foreground">Nenhuma solicitação de aluno pendente no momento.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Alunos Ativos (RF05) -->
+        <section>
+            <h2 class="text-3xl font-semibold text-foreground mb-6 border-b border-border pb-3">
+                Meus Alunos Ativos
+            </h2>
+
+            <div class="bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+                <div th:if="${not #lists.isEmpty(activeStudents)}" class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-background border-b border-border">
+                            <tr>
+                                <th class="p-4 text-sm font-semibold text-muted-foreground">Aluno</th>
+                                <th class="p-4 text-sm font-semibold text-muted-foreground">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="link : ${activeStudents}" class="border-b border-border last:border-b-0">
+                                <td class="p-4 text-foreground" th:text="${link.student.user.fullName}">
+                                    Nome do Aluno
+                                </td>
+                                <td class="p-4">
+                                    <form th:action="@{/professional/links/remove/{linkId}(linkId=${link.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja remover o acesso deste aluno?')">
+                                        <button type="submit"
+                                                class="inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-destructive hover:bg-destructive/80 text-primary-foreground text-sm font-medium transition-colors">
+                                            Remover Acesso
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div th:if="${#lists.isEmpty(activeStudents)}" class="p-8 text-center">
+                    <p class="text-muted-foreground">Nenhum aluno ativo vinculado no momento.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+</html>

@@ -19,6 +19,12 @@ target/
 *.iml
 *.ipr
 
+### Node ###
+/node_modules
+
+### Tailwind ###
+/src/main/resources/static/css/output.css
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

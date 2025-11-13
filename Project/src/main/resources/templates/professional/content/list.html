@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Meus Conteúdos</title>
+</head>
+
+<main layout:fragment="content" class="pt-24 pb-12">
+    <div class="container mx-auto px-4">
+
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <h1 class="text-4xl font-bold text-foreground">
+                Meus <span class="bg-gradient-primary bg-clip-text text-transparent">Conteúdos</span>
+            </h1>
+            <a th:href="@{/professional/content/create}" 
+               class="inline-flex items-center justify-center px-6 py-2.5 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary font-medium transition-colors">
+                Criar Novo Conteúdo
+            </a>
+        </div>
+
+        <!-- Mensagens de Feedback -->
+        <div th:if="${message}" class="bg-primary/10 text-primary border border-primary p-3 rounded-md mb-6 text-center">
+            <p th:text="${message}"></p>
+        </div>
+        <div th:if="${error}" class="bg-destructive/10 text-destructive border border-destructive p-3 rounded-md mb-6 text-center">
+            <p th:text="${error}"></p>
+        </div>
+        
+        <div class="bg-card border border-border rounded-xl shadow-lg overflow-hidden">
+            <!-- Caso 1: Existem conteúdos -->
+            <div th:if="${not #lists.isEmpty(contents)}" class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-background border-b border-border">
+                        <tr>
+                            <th class="p-4 text-sm font-semibold text-muted-foreground">Título</th>
+                            <th class="p-4 text-sm font-semibold text-muted-foreground">Tipo</th>
+                            <th class="p-4 text-sm font-semibold text-muted-foreground text-right">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="content : ${contents}" class="border-b border-border last:border-b-0">
+                            <td class="p-4 text-foreground font-medium" th:text="${content.title}">
+                                Título do Conteúdo
+                            </td>
+                            <td class="p-4">
+                                <span th:text="${content.contentType.name()}"
+                                      th:classappend="${content.contentType.name() == 'ROUTINE'} ? 'bg-primary/10 text-primary' : (${content.contentType.name() == 'DIET'} ? 'bg-secondary/10 text-secondary' : 'bg-accent/10 text-accent')"
+                                      class="px-2 py-0.5 rounded-full text-xs font-medium">
+                                    TIPO
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex justify-end items-center gap-2">
+                                    <a th:href="@{/professional/content/view/{id}(id=${content.id})}"
+                                       class="inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-primary/10 hover:bg-primary/20 text-primary text-sm font-medium transition-colors">
+                                        Ver
+                                    </a>
+                                    <a th:href="@{/professional/content/edit/{id}(id=${content.id})}"
+                                       class="inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-accent/10 hover:bg-accent/20 text-accent text-sm font-medium transition-colors">
+                                        Editar
+                                    </a>
+                                    <!-- Formulário de Deleção (RF07) -->
+                                    <form th:action="@{/professional/content/delete/{id}(id=${content.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja remover este conteúdo?')">
+                                        <button type="submit"
+                                                class="inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-destructive/10 hover:bg-destructive/20 text-destructive text-sm font-medium transition-colors">
+                                            Remover
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Caso 2: Nenhum conteúdo -->
+            <div th:if="${#lists.isEmpty(contents)}" class="p-8 text-center">
+                <p class="text-muted-foreground">Você ainda não criou nenhum conteúdo. Comece clicando em "Criar Novo Conteúdo".</p>
+            </div>
+        </div>
+
+    </div>
+</main>
+</html>

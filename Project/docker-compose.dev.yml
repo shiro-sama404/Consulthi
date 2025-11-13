@@ -1,0 +1,56 @@
+services:
+  # SERVIÇOS DE BANCO DE DADOS (Idênticos ao seu outro compose)
+  consulthi-db:
+    image: postgres:16
+    container_name: consulthi-db
+    restart: always
+    environment:
+      POSTGRES_USER: consulthi_user
+      POSTGRES_PASSWORD: 'temp'
+      POSTGRES_DB: consulthi_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - consulthi_data:/var/lib/postgresql/data
+
+  pgadmin-consulthi:
+    image: dpage/pgadmin4
+    container_name: pgadmin-consulthi
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@consulthi.com
+      PGADMIN_DEFAULT_PASSWORD: 'admin'
+    ports:
+      - "8081:80"
+    depends_on:
+      - consulthi-db
+
+  # APLICAÇÃO CONSULTHI (Modo de Desenvolvimento)
+  consulthi-app-dev:
+    # Constrói usando nosso Dockerfile de desenvolvimento
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: consulthi-app-dev
+    ports:
+      - "8080:8080" # App
+      - "35729:35729" # LiveReload do DevTools
+    depends_on:
+      - consulthi-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://consulthi-db:5432/consulthi_db
+      SPRING_DATASOURCE_USERNAME: consulthi_user
+      SPRING_DATASOURCE_PASSWORD: 'temp'
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    # --- A MÁGICA DOS VOLUMES ---
+    # Espelha seu código-fonte local para dentro do container
+    volumes:
+      - ./src:/app/src
+      - ./pom.xml:/app/pom.xml
+      - ./tailwind.config.js:/app/tailwind.config.js
+      # Usamos um volume 'target' para persistir os downloads do Maven
+      - consulthi_target:/app/target
+
+volumes:
+  consulthi_data:
+  consulthi_target:

@@ -44,16 +44,15 @@ public class SecurityConfig
     {
         http
             .authorizeHttpRequests(auth -> auth
-                // Permite acesso público às páginas de informação e arquivos estáticos
-                .requestMatchers("/home/", "/", "/login", "/register", "/tutorial", "/css/**", "/js/**", "/img/**").permitAll()
+                .requestMatchers("/webjars/**", "/css/**", "/js/**", "/img/**", "/svg/**").permitAll()
+                .requestMatchers("/", "/home", "/login", "/register", "/tutorial").permitAll()
                 // Exige autenticação para qualquer outra página
                 .anyRequest().authenticated()      
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .successHandler(loginSuccessHandler) 
+                .successHandler(loginSuccessHandler)
                 .failureHandler(authenticationFailureHandler)
-                .defaultSuccessUrl("/home", true) 
                 .permitAll()
             )
             .logout(logout -> logout

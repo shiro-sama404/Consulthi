@@ -6,9 +6,12 @@ import com.ThimoteoConsultorias.Consulthi.service.UserService;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 @Controller
 @RequestMapping("/user")
@@ -23,6 +26,21 @@ public class UserController
         this.schedulerService = schedulerService;
     }
 
+    @GetMapping("/profile")
+    public String userProfile(Model model, @AuthenticationPrincipal(expression = "id") Long currentUserId)
+    {
+        try
+        {
+            User user = userService.getUserById(currentUserId); // Você precisará de um método assim no seu service
+            model.addAttribute("user", user);
+            return "user/profile";
+        }
+        catch (Exception e)
+        {
+            return "redirect:/"; 
+        }
+    }
+
     /**
      * Processa a solicitação de desativação de conta do usuário logado (RF04).
      * @param currentUserId O ID do usuário autenticado.
@@ -30,7 +48,7 @@ public class UserController
      * @return Redireciona para a página de logout.
      */
     @PostMapping("/deactivate")
-    public String handleDeactivation(@AuthenticationPrincipal Long currentUserId, RedirectAttributes redirectAttributes)
+    public String handleDeactivation(@AuthenticationPrincipal(expression = "id") Long currentUserId, RedirectAttributes redirectAttributes)
     {
         try 
         {

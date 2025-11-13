@@ -1,0 +1,118 @@
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+    <th:block th:fragment="header-public">
+        <nav class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <a th:href="@{/}" class="flex items-center gap-2">
+                        <img th:src="@{/svg/ConsulThiIcon.svg}" alt="ConsulThi Logo" class="w-8 h-8 text-primary"/>
+                        <span class="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                            ConsulThi
+                        </span>
+                    </a>
+                    
+                    <div class="hidden md:flex items-center gap-8">
+                        <a href="#home" class="text-foreground hover:text-primary transition-colors">Início</a>
+                        <a href="#promocoes" class="text-foreground hover:text-primary transition-colors">Promoções</a>
+                        <a href="#servicos" class="text-foreground hover:text-primary transition-colors">Serviços</a>
+                        <a href="#depoimentos" class="text-foreground hover:text-primary transition-colors">Depoimentos</a>
+                        <a href="#sobre" class="text-foreground hover:text-primary transition-colors">Sobre</a>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <a th:href="@{/login}" class="hidden sm:inline-flex items-center justify-center px-4 py-2 h-10 rounded-md text-foreground hover:text-primary font-medium transition-colors">Entrar</a>
+                        <a th:href="@{/register}" class="inline-flex items-center justify-center px-4 py-2 h-10 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground shadow-glow-primary font-medium">
+                            Comece Agora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </th:block>
+
+    <th:block th:fragment="header-authenticated">
+        <nav class="fixed top-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <a th:href="@{/home}" class="flex items-center gap-2">
+                        <img th:src="@{/svg/ConsulThiIcon.svg}" alt="ConsulThi Logo" class="w-8 h-8 text-primary"/>
+                         <span class="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                            ConsulThi
+                        </span>
+                    </a>
+                    
+                    <div class="flex items-center gap-4">
+                        <span class="text-muted-foreground hidden sm:block" sec:authentication="name"></span>
+                        <a th:href="@{/user/profile}" class="text-primary hover:underline">Perfil</a>
+                        <form th:action="@{/logout}" method="post" class="inline-block">
+                            <button type="submit" class="px-3 py-1.5 rounded-md bg-destructive hover:bg-destructive/80 text-primary-foreground font-medium text-sm">
+                                Sair
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </th:block>
+
+    <th:block th:fragment="footer">
+        <footer class="bg-card border-t border-border py-12">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <img th:src="@{/svg/ConsulThiIcon.svg}" alt="ConsulThi Logo" class="w-8 h-8 text-primary"/>
+                            <span class="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                                ConsulThi
+                            </span>
+                        </div>
+                        <p class="text-muted-foreground">
+                            Transformando vidas através do treinamento e nutrição personalizados.
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-foreground mb-4">Links Rápidos</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#home" class="text-muted-foreground hover:text-primary transition-colors">Início</a></li>
+                            <li><a href="#promocoes" class="text-muted-foreground hover:text-primary transition-colors">Promoções</a></li>
+                            <li><a href="#servicos" class="text-muted-foreground hover:text-primary transition-colors">Serviços</a></li>
+                            <li><a href="#depoimentos" class="text-muted-foreground hover:text-primary transition-colors">Depoimentos</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-foreground mb-4">Serviços</h4>
+                        <ul class="space-y-2 text-muted-foreground">
+                            <li>Treinamento Personalizado</li>
+                            <li>Consultoria Nutricional</li>
+                            <li>Avaliação Física</li>
+                            <li>Acompanhamento Online</li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-foreground mb-4">Contato</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-center gap-2 text-muted-foreground">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-primary"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.83 1.83 0 0 1-2.06 0L2 7"/></svg>
+                                thimoteo@consulthi.com
+                            </li>
+                            <li class="flex items-center gap-2 text-muted-foreground">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-primary"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-5.6-5.6A19.79 19.79 0 0 1 2 16.18V14a2 2 0 0 1 2-2h3.18a3 3 0 0 1 3 3v2"/></svg>
+                                (67) 99133-9879
+                            </li>
+                            <li class="flex items-center gap-2 text-muted-foreground">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-primary"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                                @thimyro_
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-border pt-8 text-center text-muted-foreground">
+                    <p>&copy; 2024 ConsulThi. Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </footer>
+    </th:block>
+</html>
