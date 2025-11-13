@@ -27,12 +27,7 @@
             </div>
         </div>
 
-        <div th:switch="${content.contentType?.name()}">
-
-            <!-- ======================= -->
-            <!-- Caso 1: ROTINA (Preview)-->
-            <!-- ======================= -->
-            <div th:case="'ROUTINE'" th:with="routine=${content}">
+        <div> <div th:if="${content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Routine)}" th:with="routine=${content}">
                 
                 <div class="bg-card border border-border rounded-xl shadow-lg p-8 mb-8">
                     <h2 class="text-2xl font-semibold text-foreground mb-6">Detalhes da Rotina</h2>
@@ -82,24 +77,20 @@
                 </div>
             </div>
 
-            <!-- ======================= -->
-            <!-- Caso 2: DIETA (Preview) -->
-            <!-- ======================= -->
-            <div th:case="'DIET'" th:with="diet=${content}">
+            <div th:if="${content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Diet)}" th:with="diet=${content}">
                 <div class="bg-card border border-border rounded-xl shadow-lg p-8">
                     <div>
                         <label class="block text-sm font-medium text-muted-foreground mb-2">Plano Alimentar</label>
+                        
                         <div class="prose prose-invert max-w-none bg-background p-4 rounded-md border border-border"
-                             th:utext="${#strings.replace(diet.mealsEspecifications, T(java.lang.System).getProperty('line.separator'), '&lt;br/&gt;')}">
+                             th:utext="${#strings.replace(diet.mealsEspecifications, '\n', '&lt;br/&gt;')}">
                         </div>
+                        
                     </div>
                 </div>
             </div>
 
-            <!-- ======================= -->
-            <!-- Caso 3: MATERIAL (Preview) -->
-            <!-- ======================= -->
-            <div th:case="'MATERIAL'" th:with="material=${content}">
+            <div th:if="${content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Material)}" th:with="material=${content}">
                  <div class="bg-card border border-border rounded-xl shadow-lg p-8">
                     <div class="flex flex-wrap gap-2 mb-6">
                         <span th:each="tag : ${material.tags}" th:text="${tag}"
@@ -107,12 +98,13 @@
                         </span>
                     </div>
                      
-                    <!-- *** CORRIGIDO DE .content PARA .value *** -->
                     <div class="space-y-6">
                         <div th:each="block : ${material.contentBlocks}">
+                            
                             <div th:if="${block.type == 'TEXT'}">
-                                <p class="text-foreground" th:utext="${#strings.replace(block.value, T(java.lang.System).getProperty('line.separator'), '&lt;br/&gt;')}"></p>
+                                <p class="text-foreground" th:utext="${#strings.replace(block.value, '\n', '&lt;br/&gt;')}"></p>
                             </div>
+                            
                             <div th:if="${block.type == 'IMAGE'}">
                                 <img th:src="${block.value}" alt="Imagem do material" class="w-full h-auto rounded-md border border-border"/>
                             </div>
@@ -129,11 +121,13 @@
                  </div>
             </div>
 
-            <div th:case="*">
+            <div th:if="${not (content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Routine) or
+                               content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Diet) or
+                               content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Material))}">
                 <p class="text-muted-foreground">Tipo de conteúdo não reconhecido.</p>
             </div>
         </div>
-
-    </div>
+        
+        </div>
 </main>
 </html>

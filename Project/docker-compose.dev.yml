@@ -1,5 +1,5 @@
 services:
-  # SERVIÇOS DE BANCO DE DADOS (Idênticos ao seu outro compose)
+  # SERVIÇOS DE BANCO DE DADOS
   consulthi-db:
     image: postgres:16
     container_name: consulthi-db
@@ -27,7 +27,6 @@ services:
 
   # APLICAÇÃO CONSULTHI (Modo de Desenvolvimento)
   consulthi-app-dev:
-    # Constrói usando nosso Dockerfile de desenvolvimento
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -42,13 +41,10 @@ services:
       SPRING_DATASOURCE_USERNAME: consulthi_user
       SPRING_DATASOURCE_PASSWORD: 'temp'
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-    # --- A MÁGICA DOS VOLUMES ---
-    # Espelha seu código-fonte local para dentro do container
     volumes:
       - ./src:/app/src
       - ./pom.xml:/app/pom.xml
       - ./tailwind.config.js:/app/tailwind.config.js
-      # Usamos um volume 'target' para persistir os downloads do Maven
       - consulthi_target:/app/target
 
 volumes:

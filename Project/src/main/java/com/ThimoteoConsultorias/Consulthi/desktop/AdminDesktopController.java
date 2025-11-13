@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import jakarta.annotation.PostConstruct; 
 
-//@Component
+@Component
 public class AdminDesktopController
 {
     private final AdminApiRestClient adminApiRestClient;

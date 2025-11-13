@@ -23,26 +23,25 @@
         </div>
 
         <!-- Seção de Materiais (RF06) -->
-        <section>
-            <h2 class="text-3xl font-semibold text-foreground mb-6 border-b border-border pb-3">
+        <section class="mb-12"> <h2 class="text-3xl font-semibold text-foreground mb-6 border-b border-border pb-3">
                 Materiais de Apoio
             </h2>
 
-            <!-- TODO: Descomentar quando o 'educationalMaterials' for implementado no Controller -->
-            <!--
             <div th:if="${not #lists.isEmpty(educationalMaterials)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div th:each="material : ${educationalMaterials}" class="bg-card border border-border rounded-xl shadow-lg p-6">
-                    <h3 class="text-xl font-bold text-accent mb-2" th:text="${material.title}">Título do Material</h3>
+                <div th:each="material : ${educationalMaterials}" class="bg-card border border-border rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-accent mb-2" th:text="${material.name}">Título do Material</h3>
+                        <p class="text-muted-foreground mb-4 line-clamp-2" th:text="${material.description}">Descrição...</p>
+                    </div>
                     <a th:href="@{/student/content/{id}(id=${material.id})}"
-                       class="inline-flex items-center justify-center w-full px-4 py-2 h-10 rounded-md bg-accent hover:bg-accent/90 text-primary-foreground font-medium transition-colors">
+                        class="inline-flex items-center justify-center w-full px-4 py-2 h-10 rounded-md bg-accent hover:bg-accent/90 text-primary-foreground font-medium transition-colors">
                         Ver Material
                     </a>
                 </div>
             </div>
-            -->
-
+            
             <div th:if="${#lists.isEmpty(educationalMaterials)}" 
-                 class="bg-card border border-border rounded-xl p-8 text-center">
+                    class="bg-card border border-border rounded-xl p-8 text-center">
                 <p class="text-muted-foreground">Nenhum material de apoio disponível.</p>
             </div>
         </section>
@@ -93,22 +92,21 @@
                 Minhas Dietas
             </h2>
             
-            <!-- TODO: Descomentar quando o 'activeDiets' for implementado no Controller -->
-            <!--
             <div th:if="${not #lists.isEmpty(activeDiets)}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div th:each="diet : ${activeDiets}" class="bg-card border border-border rounded-xl shadow-lg p-6">
-                    <h3 class="text-xl font-bold text-secondary mb-2" th:text="${diet.title}">Título da Dieta</h3>
-                    <p class="text-muted-foreground mb-4" th:text="${diet.calories} + ' kcal'">Total de Calorias</p>
+                <div th:each="diet : ${activeDiets}" class="bg-card border border-border rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold text-secondary mb-2" th:text="${diet.name}">Título da Dieta</h3>
+                        <p class="text-muted-foreground mb-4 line-clamp-2" th:text="${diet.description}">Descrição da dieta...</p>
+                    </div>
                     <a th:href="@{/student/content/{id}(id=${diet.id})}"
-                       class="inline-flex items-center justify-center w-full px-4 py-2 h-10 rounded-md bg-secondary hover:bg-secondary/90 text-primary-foreground font-medium transition-colors">
+                        class="inline-flex items-center justify-center w-full px-4 py-2 h-10 rounded-md bg-secondary hover:bg-secondary/90 text-primary-foreground font-medium transition-colors">
                         Ver Dieta
                     </a>
                 </div>
             </div>
-            -->
             
             <div th:if="${#lists.isEmpty(activeDiets)}" 
-                 class="bg-card border border-border rounded-xl p-8 text-center">
+                    class="bg-card border border-border rounded-xl p-8 text-center">
                 <p class="text-muted-foreground">Nenhuma dieta liberada no momento.</p>
             </div>
         </section>

@@ -66,6 +66,23 @@
                           class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"></textarea>
             </div>
             <div>
+                <label for="accessStudentIds" class="block text-sm font-medium text-muted-foreground mb-1">
+                    Liberar Acesso Para (Opcional)
+                </label>
+                <select id="accessStudentIds" th:field="*{accessStudentIds}" multiple 
+                        class="w-full p-3 h-32 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                    
+                    <option th:each="link : ${activeStudents}" 
+                            th:value="${link.student.user.id}" 
+                            th:text="${link.student.user.fullName}">
+                        Nome do Aluno
+                    </option>
+                </select>
+                <p class="text-xs text-muted-foreground mt-1">
+                    Se nenhum aluno for selecionado, o conteúdo será visível para <strong>TODOS</strong> os seus alunos ativos.
+                </p>
+            </div>
+            <div>
                 <label class="block text-sm font-medium text-muted-foreground mb-1">Tipo de Conteúdo</label>
                 <p class="w-full p-3 rounded-md bg-background border border-border text-muted-foreground" th:text="*{contentType.name()}"></p>
             </div>
@@ -132,13 +149,13 @@
                         <div>
                             <label for="level" class="block text-sm font-medium text-muted-foreground mb-1">Nível da Rotina</label>
                             <select id="level" th:field="*{routineLevel}" class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
-                                <option th:each="opt : ${routineLevels}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
+                                <option th:each="opt : ${allRoutineLevels}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
                             </select>
                         </div>
                         <div>
                             <label for="goal" class="block text-sm font-medium text-muted-foreground mb-1">Objetivo Principal</label>
                             <select id="goal" th:field="*{goals}" class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
-                                <option th:each="opt : ${goalTypes}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
+                                <option th:each="opt : ${allGoalTypes}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
                             </select>
                         </div>
                     </div>
@@ -200,7 +217,7 @@
                                             <label class="text-xs font-medium text-muted-foreground">Técnica</label>
                                             <select th:field="*{trainingDtos[__${tStat.index}__].trainingSets[__${eStat.index}__].technique}" class="w-full p-2 text-sm rounded-md bg-background border border-border">
                                                 <option value="">Nenhuma</option>
-                                                <option th:each="t : ${trainingTechniques}" th:value="${t.name()}" th:text="${t.name()}"></option>
+                                                <option th:each="t : ${allTrainingTechniques}" th:value="${t.name()}" th:text="${t.name()}"></option>
                                             </select>
                                         </div>
                                         <div>
@@ -240,10 +257,10 @@
                 /*<![CDATA[*/
                 
                 const allExercises = /*[[${exercises}]]*/ null;
-                const allTechniques = /*[[${trainingTechniques}]]*/ null;
+                const allTechniques = /*[[${allTrainingTechniques}]]*/ null;
                 const trainingsList = document.getElementById('trainings-list');
                 
-                let trainingIdx = /*[[${#lists.size(contentDto.trainingDtos)}]]*/ 0;
+                let trainingIdx = /*[[${contentDto.trainingDtos != null ? #lists.size(contentDto.trainingDtos) : 0}]]*/ 0;
                 let contentBlockIdx = /*[[${contentDto.contentBlocks != null ? #lists.size(contentDto.contentBlocks) : 0}]]*/ 0;
 
                 // --- LÓGICA PARA BLOCOS DE CONTEÚDO (MATERIAL) ---

@@ -5,8 +5,10 @@ import com.ThimoteoConsultorias.Consulthi.enums.*;
 import com.ThimoteoConsultorias.Consulthi.exception.ResourceNotFoundException;
 import com.ThimoteoConsultorias.Consulthi.model.Content;
 import com.ThimoteoConsultorias.Consulthi.model.Professional;
+import com.ThimoteoConsultorias.Consulthi.model.StudentProfessionalLink;
 import com.ThimoteoConsultorias.Consulthi.service.ContentService;
 import com.ThimoteoConsultorias.Consulthi.service.ProfessionalService;
+import com.ThimoteoConsultorias.Consulthi.service.StudentProfessionalLinkService;
 import com.ThimoteoConsultorias.Consulthi.service.TrainingService;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +18,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Controller responsável pela gestão de Conteúdo (Rotina, Dieta, Material) 
@@ -32,6 +38,7 @@ public class ContentController
     // -----------------------------------------------------------------------
     private final ContentService contentService;
     private final ProfessionalService professionalService;
+    private final StudentProfessionalLinkService linkService;
     private final TrainingService trainingService;
 
     // ----------------------------------------------------
@@ -39,11 +46,13 @@ public class ContentController
     // ----------------------------------------------------
     public ContentController(
         ContentService contentService, 
-        ProfessionalService professionalService, 
+        ProfessionalService professionalService,
+        StudentProfessionalLinkService linkService,
         TrainingService trainingService)
     {
         this.contentService = contentService;
         this.professionalService = professionalService;
+        this.linkService = linkService;
         this.trainingService = trainingService;
     }
 
@@ -58,11 +67,9 @@ public class ContentController
     public String listContent(@AuthenticationPrincipal(expression = "id") Long currentUserId, Model model) 
     {
         Professional creator = professionalService.getProfessionalById(currentUserId);
-        
         List<Content> contents = contentService.listAllContentByCreator(creator, ContentType.ALL);
-        
         model.addAttribute("contents", contents);
-        
+
         return "professional/content/list";
     }
 
@@ -70,10 +77,43 @@ public class ContentController
      * Exibe o formulário de criação de conteúdo.
      */
     @GetMapping("/create")
-    public String showCreateContentForm(Model model)
+    public String showCreateContentForm(@AuthenticationPrincipal(expression = "id") Long currentUserId, Model model)
     {
-        model.addAttribute("contentDto", ContentDTO.builder().build()); 
-        model.addAttribute("contentTypes", ContentType.values());
+        model.addAttribute("contentDto", ContentDTO.builder().build());
+        List<ContentType> creatableTypes = Arrays.stream(ContentType.values())
+            .filter(type -> type != ContentType.ALL)
+            .collect(Collectors.toList());
+        model.addAttribute("contentTypes", creatableTypes);
+
+        model.addAttribute("allContentBlockTypes", ContentBlockType.values());
+        model.addAttribute("allContentTags", ContentTag.values());
+        model.addAttribute("allRoutineLevels", RoutineLevel.values());
+        model.addAttribute("allGoalTypes", GoalType.values());
+        model.addAttribute("allTrainingTechniques", TrainingTechnique.values());
+        model.addAttribute("allMuscleGroups", MuscleGroup.values());
+        
+        try 
+        {
+            model.addAttribute("exercises", trainingService.listAllExercises());
+        } 
+        catch (Exception e) 
+        {
+            model.addAttribute("exercises", List.of()); 
+            model.addAttribute("error", "Alerta: Não foi possível carregar a lista de exercícios pré-definidos.");
+        }
+
+        try 
+        {
+            Professional professional = professionalService.getProfessionalById(currentUserId);
+            List<StudentProfessionalLink> activeLinks = linkService.getLinksByProfessionalAndStatusIn(professional, EnumSet.of(LinkStatus.ACCEPTED));
+
+            model.addAttribute("activeStudents", activeLinks);
+        } 
+        catch (Exception e) 
+        {
+            model.addAttribute("activeStudents", List.of());
+            model.addAttribute("error", "Não foi possível carregar a lista de alunos.");
+        }
         
         return "professional/content/create";
     }
@@ -115,27 +155,44 @@ public class ContentController
     @GetMapping("/edit/{contentId}")
     public String showUpdateContentForm(@PathVariable Long contentId, @AuthenticationPrincipal(expression = "id") Long currentUserId, Model model)
     {
+        model.addAttribute("allContentBlockTypes", ContentBlockType.values());
+        model.addAttribute("allContentTags", ContentTag.values());
+        model.addAttribute("allRoutineLevels", RoutineLevel.values());
+        model.addAttribute("allGoalTypes", GoalType.values());
+        model.addAttribute("allTrainingTechniques", TrainingTechnique.values());
+        model.addAttribute("allMuscleGroups", MuscleGroup.values());
+        model.addAttribute("exercises", trainingService.listAllExercises());
+
         try 
         {
-            ContentDTO contentDto = contentService.getContentAsDTO(contentId, currentUserId); 
-            
+            ContentDTO contentDto = contentService.getContentAsDTO(contentId, currentUserId);
             model.addAttribute("contentDto", contentDto);
-            model.addAttribute("routineLevels", RoutineLevel.values());
-            model.addAttribute("goalTypes", GoalType.values());
-            model.addAttribute("contentTags", ContentTag.values());
-            model.addAttribute("trainingTechniques", TrainingTechnique.values());
-            model.addAttribute("exercises", trainingService.listAllExercises());
+
+            try 
+            {
+                Professional professional = professionalService.getProfessionalById(currentUserId);
+                List<StudentProfessionalLink> activeLinks = linkService.getLinksByProfessionalAndStatusIn(professional, EnumSet.of(LinkStatus.ACCEPTED));
+
+                model.addAttribute("activeStudents", activeLinks);
+            } 
+            catch (Exception e) 
+            {
+                model.addAttribute("activeStudents", List.of());
+                model.addAttribute("error", "Não foi possível carregar a lista de alunos.");
+            }
             
             return "professional/content/update";
         } 
         catch (ResourceNotFoundException e) 
         {
             model.addAttribute("error", "Conteúdo não encontrado para edição.");
+            model.addAttribute("errorMessage", e.getMessage());
             return "error/404";
         }
         catch (SecurityException e) 
         {
             model.addAttribute("error", "Ação não autorizada: " + e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
             return "error/accessDenied";
         }
     }
@@ -207,9 +264,11 @@ public class ContentController
      * Remove o conteúdo (RF07).
      */
     @PostMapping("/delete/{contentId}")
-    public String deleteContent(@PathVariable Long contentId, 
-                                @AuthenticationPrincipal(expression = "id") Long currentUserId, 
-                                RedirectAttributes redirectAttributes) 
+    public String deleteContent
+    (
+        @PathVariable Long contentId, 
+        @AuthenticationPrincipal(expression = "id") Long currentUserId, 
+        RedirectAttributes redirectAttributes) 
     {
         try 
         {
@@ -243,23 +302,33 @@ public class ContentController
     @GetMapping("/fields-for-type")
     public String getFieldsForType(@RequestParam ContentType contentType, Model model)
     {
-        model.addAttribute("contentDto", ContentDTO.builder().contentType(contentType).build());
+        ContentDTO.ContentDTOBuilder dtoBuilder = ContentDTO.builder()
+            .contentType(contentType)
+            .tags(Set.of())
+            .contentBlocks(List.of())
+            .goals(Set.of())
+            .trainingDtos(List.of());
         
-        model.addAttribute("routineLevels", RoutineLevel.values());
-        model.addAttribute("goalTypes", GoalType.values());
-        model.addAttribute("contentTags", ContentTag.values());
-        model.addAttribute("trainingTechniques", TrainingTechnique.values());
+        model.addAttribute("contentDto", dtoBuilder.build());
         
-        if (contentType == ContentType.ROUTINE)
-            model.addAttribute("exercises", trainingService.listAllExercises()); 
-        
-        switch (contentType) {
+        switch (contentType)
+        {
             case DIET:
                 return "professional/content/create :: dietFields";
+                
             case MATERIAL:
+                model.addAttribute("allContentBlockTypes", ContentBlockType.values());
+                model.addAttribute("allContentTags", ContentTag.values());
                 return "professional/content/create :: materialFields";
+                
             case ROUTINE:
+                model.addAttribute("allRoutineLevels", RoutineLevel.values());
+                model.addAttribute("allGoalTypes", GoalType.values());
+                model.addAttribute("allTrainingTechniques", TrainingTechnique.values());
+                model.addAttribute("allMuscleGroups", MuscleGroup.values());
+                model.addAttribute("exercises", trainingService.listAllExercises()); 
                 return "professional/content/create :: routineFields";
+                
             default:
                 return "professional/content/create :: emptyFields";
         }

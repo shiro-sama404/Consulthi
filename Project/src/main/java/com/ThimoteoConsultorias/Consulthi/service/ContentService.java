@@ -80,10 +80,16 @@ public class ContentService
      * Retorna o conteúdo pelo ID.
      * @throws ResourceNotFoundException se o Content não for encontrado.
      */
+    @Transactional(readOnly = true)
     public Content getContentById(Long id) throws ResourceNotFoundException
     {
-        return contentRepository.findById(id)
+        Content content = contentRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Conteúdo de id '" + id +"' não encontrado."));
+
+        if (content.getCreator() != null && content.getCreator().getUser() != null)
+            content.getCreator().getUser().getFullName();
+
+        return content;
     }
 
     /**
@@ -135,6 +141,7 @@ public class ContentService
      * Verifica e retorna o conteúdo que um Aluno PODE acessar (RF06).
      * @throws SecurityException se o vínculo ou acesso granular for negado.
      */
+    @Transactional(readOnly = true)
     public Content getContentForStudent(Long contentId, Long studentUserId)
     throws SecurityException
     {
@@ -145,7 +152,7 @@ public class ContentService
             
         Professional creator = content.getCreator();
         
-        boolean hasActiveLink = linkService.isActiveLink(studentUserId, creator.getUser().getId());
+        boolean hasActiveLink = linkService.isActiveLink(studentUserId, creator.getId());
         if (!hasActiveLink)
             throw new SecurityException("Acesso negado: Não há vínculo ativo com o profissional criador.");
         
@@ -165,10 +172,6 @@ public class ContentService
         
         if (creatorId.equals(userId))
             return true;
-        
-        // Deixar o adm visualizar?
-        // if (userService.getUserById(userId).getRoles().contains(Role.ADMINISTRATOR))
-        //    return true;
             
         try {
             getContentForStudent(content.getId(), userId);
@@ -203,15 +206,10 @@ public class ContentService
         
         // Garante que o tipo no DTO é o mesmo da entidade persistida
         if (contentDto.contentType() != getContentType(content))
-        {
             throw new IllegalArgumentException("O tipo de conteúdo não pode ser alterado durante a edição.");
-        }
 
         content.setName(contentDto.name());
         content.setDescription(contentDto.description());
-        
-        // RF07 Regra: Um usuário profissional não pode alterar qualquer conteúdo que não seja de autoria própria.
-        // Já garantido pelo getContentByCreatorId
         
         content.setAccessStudentIds(contentDto.accessStudentIds());
         content.setLastModificationDate(LocalDateTime.now());
@@ -231,7 +229,6 @@ public class ContentService
             routine.setRoutineLevel(contentDto.routineLevel());
             routine.setGoals(contentDto.goals());
             
-            // Substituição total dos Treinos
             List<Training> newTrainings = contentDto.trainingDtos().stream()
                 .map(trainingService::createTrainingFromDTO)
                 .collect(Collectors.toList());

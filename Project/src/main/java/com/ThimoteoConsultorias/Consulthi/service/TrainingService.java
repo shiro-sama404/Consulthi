@@ -52,7 +52,6 @@ public class TrainingService
     @Transactional
     public Training createTrainingFromDTO(TrainingDTO dto)
     {
-        // Converte a lista de Séries, validando cada Exercise ID
         List<TrainingSet> sets = dto.trainingSets().stream()
             .map(this::mapTrainingSetDtoToEntity)
             .collect(Collectors.toList());
@@ -127,7 +126,6 @@ public class TrainingService
      */
     private TrainingSet mapTrainingSetDtoToEntity(TrainingSetDTO dto)
     {
-        // Validação de Existência (se o ID for fornecido)
         if (dto.exerciseId() != null)
         {
             exerciseRepository.findById(dto.exerciseId())

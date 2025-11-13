@@ -8,30 +8,32 @@
     
     <th:block layout:fragment="page-head">
         <style>
-            .dynamic-item {
+            .dynamic-item
+            {
                 position: relative;
-                padding-right: 40px; 
             }
-            .remove-btn {
+            .remove-btn
+            {
                 position: absolute;
-                top: 50%;
-                right: 0;
-                transform: translateY(-50%);
+                top: 0.75rem;
+                right: 0.75rem;
+                transform: none;
                 cursor: pointer;
                 color: hsl(var(--destructive));
                 font-weight: bold;
-                padding: 4px 8px;
+                width: 28px;
+                height: 28px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 background-color: hsl(var(--destructive) / 0.1);
-                border-radius: 99px;
+                border-radius: 50%;
+                transition: background-color 0.2s ease;
+                z-index: 10;
             }
-            .remove-btn:hover {
+            .remove-btn:hover
+            {
                 background-color: hsl(var(--destructive) / 0.2);
-            }
-            .remove-btn-top {
-                 position: absolute;
-                 top: 1.5rem; 
-                 right: 1.5rem; 
-                 transform: none;
             }
         </style>
     </th:block>
@@ -48,15 +50,9 @@
             <p th:text="${error}"></p>
         </div>
 
-        <!-- 
-          MUDANÇA: 
-          - Botão de submit movido para o final do form.
-          - Placeholder "Selecione um tipo..." está DENTRO do 'content-specific-fields'
-        -->
         <form th:action="@{/professional/content/create}" th:object="${contentDto}" method="post" 
               class="bg-card border border-border rounded-xl shadow-lg p-8 space-y-6">
 
-            <!-- Campos Comuns -->
             <div>
                 <label for="name" class="block text-sm font-medium text-muted-foreground mb-1">Título</label>
                 <input type="text" id="name" th:field="*{name}" required
@@ -70,9 +66,26 @@
                           placeholder="Breve descrição do conteúdo"></textarea>
             </div>
             <div>
+                <label for="accessStudentIds" class="block text-sm font-medium text-muted-foreground mb-1">
+                    Liberar Acesso Para (Opcional)
+                </label>
+                <select id="accessStudentIds" th:field="*{accessStudentIds}" multiple 
+                        class="w-full p-3 h-32 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                    
+                    <option th:each="link : ${activeStudents}" 
+                            th:value="${link.student.user.id}" 
+                            th:text="${link.student.user.fullName}">
+                        Nome do Aluno
+                    </option>
+                </select>
+                <p class="text-xs text-muted-foreground mt-1">
+                    Se nenhum aluno for selecionado, o conteúdo será visível para <strong>TODOS</strong> os seus alunos ativos.
+                </p>
+            </div>
+            <div>
                 <label for="contentType" class="block text-sm font-medium text-muted-foreground mb-1">Tipo de Conteúdo</label>
                 <select id="contentType" th:field="*{contentType}" required
-                        hx-get="@{/professional/content/fields-for-type}"
+                        th:hx-get="@{/professional/content/fields-for-type}"
                         hx-target="#content-specific-fields"
                         hx-swap="innerHTML"
                         hx-trigger="change"
@@ -85,132 +98,124 @@
                 </select>
             </div>
 
-            <!-- Container dos Campos Específicos (HTMX Target) -->
             <div id="content-specific-fields" class="space-y-6 pt-4 border-t border-border">
-                <!-- 
-                  MUDANÇA: 
-                  - Placeholder movido para dentro do target.
-                  - O fragmento 'emptyFields' foi criado para o caso de "Selecione..."
-                -->
                 <p class="text-muted-foreground text-center">Selecione um tipo de conteúdo para ver mais opções.</p>
             </div>
             
-            <!-- 
-              MUDANÇA: 
-              - Botão de submit movido para o final do formulário.
-            -->
             <button type="submit" 
                     class="w-full mt-6 px-4 py-3 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-glow-primary transition-colors">
                 Criar Conteúdo
             </button>
             
-        </form>
-    </div>
-    
-    <!-- ====================================================================== -->
-    <!-- FRAGMENTOS HTMX (Definidos no mesmo arquivo para o Thymeleaf encontrar) -->
-    <!-- ====================================================================== -->
-    
-    <!-- Fragmento Vazio (para o placeholder) -->
-    <div th:fragment="emptyFields" class="space-y-6 pt-4 border-t border-border">
-         <p class="text-muted-foreground text-center">Selecione um tipo de conteúdo para ver mais opções.</p>
-    </div>
 
-    <!-- Fragmento para DIET -->
-    <div th:fragment="dietFields" class="space-y-6 pt-4 border-t border-border">
-        <div>
-            <label for="mealsEspecifications" class="block text-sm font-medium text-muted-foreground mb-1">Plano Alimentar</label>
-            <textarea id="mealsEspecifications" th:field="*{mealsEspecifications}" rows="10"
-                      class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
-                      placeholder="Descreva as refeições..."></textarea>
-        </div>
-    </div>
-
-    <!-- 
-      Fragmento para MATERIAL 
-      MUDANÇA: 
-      - Usa os enums 'allContentTags' e 'allContentBlockTypes' injetados pelo controller
-    -->
-    <div th:fragment="materialFields" class="space-y-6 pt-4 border-t border-border">
-        <div>
-            <label class="block text-sm font-medium text-muted-foreground mb-2">Tags</label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 bg-background rounded-md border border-border">
-                <div th:each="tag : ${allContentTags}" class="flex items-center gap-2">
-                    <input type="checkbox" th:field="*{tags}" th:value="${tag.name()}" th:id="${'tag-' + tag.name()}"
-                           class="h-4 w-4 rounded border-border text-primary focus:ring-primary">
-                    <label th:for="${'tag-' + tag.name()}" class="text-sm text-foreground" th:text="${tag.name()}"></label>
+            <div class="hidden">
+                <div th:fragment="emptyFields">
+                    <div th:object="${contentDto}" class="space-y-6 pt-4 border-t border-border">
+                        <p class="text-muted-foreground text-center">Selecione um tipo de conteúdo para ver mais opções.</p>
+                    </div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="border-t border-border pt-6">
-            <h3 class="text-xl font-semibold text-foreground mb-4">Blocos de Conteúdo</h3>
-            <div id="content-blocks-list" class="space-y-4">
-                <!-- Blocos de conteúdo serão adicionados aqui -->
-            </div>
-            <button type="button" id="add-content-block-btn"
-                    class="mt-4 inline-flex items-center justify-center px-4 py-2 h-9 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-medium transition-colors">
-                Adicionar Bloco
-            </button>
-        </div>
-    </div>
 
-    <!-- 
-      Fragmento para ROUTINE 
-      MUDANÇA: 
-      - Usa os enums 'allRoutineLevels', 'allGoalTypes', 'allMuscleGroups', 'allTrainingTechniques'
-    -->
-    <div th:fragment="routineFields" class="space-y-6 pt-4 border-t border-border">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="level" class="block text-sm font-medium text-muted-foreground mb-1">Nível da Rotina</label>
-                <select id="level" th:field="*{routineLevel}" class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
-                    <option th:each="opt : ${allRoutineLevels}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
-                </select>
-            </div>
-            <div>
-                <label for="goal" class="block text-sm font-medium text-muted-foreground mb-1">Objetivo Principal</label>
-                <select id="goal" th:field="*{goals}" multiple class="w-full p-3 h-24 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
-                    <option th:each="opt : ${allGoalTypes}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
-                </select>
-            </div>
-        </div>
-         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="startDate" class="block text-sm font-medium text-muted-foreground mb-1">Data Início (Opcional)</label>
-                <input type="date" id="startDate" th:field="*{startDate}"
-                       class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
-            </div>
-            <div>
-                <label for="endDate" class="block text-sm font-medium text-muted-foreground mb-1">Data Fim (Opcional)</label>
-                <input type="date" id="endDate" th:field="*{endDate}"
-                       class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
-            </div>
-        </div>
+                <div th:fragment="dietFields">
+                    <div th:object="${contentDto}" class="space-y-6 pt-4 border-t border-border">
+                        <div>
+                            <label for="mealsEspecifications" class="block text-sm font-medium text-muted-foreground mb-1">Plano Alimentar</label>
+                            <textarea id="mealsEspecifications" th:field="*{mealsEspecifications}" rows="10"
+                                    class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground"
+                                    placeholder="Descreva as refeições..."></textarea>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="border-t border-border pt-6">
-            <h3 class="text-xl font-semibold text-foreground mb-4">Treinos</h3>
-            <div id="trainings-list" class="space-y-6">
+                <div th:fragment="materialFields">
+                    <div th:object="${contentDto}" class="space-y-6 pt-4 border-t border-border">
+                        <div>
+                            <label class="block text-sm font-medium text-muted-foreground mb-2">Tags</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 bg-background rounded-md border border-border">
+                                <div th:each="tag : ${allContentTags}" class="flex items-center gap-2">
+                                    <input type="checkbox" th:field="*{tags}" th:value="${tag.name()}" th:id="${'tag-' + tag.name()}"
+                                        class="h-4 w-4 rounded border-border text-primary focus:ring-primary">
+                                    <label th:for="${'tag-' + tag.name()}" class="text-sm text-foreground" th:text="${tag.name()}"></label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="border-t border-border pt-6">
+                            <h3 class="text-xl font-semibold text-foreground mb-4">Blocos de Conteúdo</h3>
+                            <div id="content-blocks-list" class="space-y-4">
+                                </div>
+                            <button type="button" id="add-content-block-btn"
+                                    class="mt-4 inline-flex items-center justify-center px-4 py-2 h-9 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-medium transition-colors">
+                                Adicionar Bloco
+                            </button>
+                        </div>
+                        
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            allContentBlockTypes = /*[[${allContentBlockTypes}]]*/ [];
+                            /*]]>*/
+                        </script>
+                    </div>
+                </div>
+
+                <div th:fragment="routineFields">
+                    <div th:object="${contentDto}" class="space-y-6 pt-4 border-t border-border">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="level" class="block text-sm font-medium text-muted-foreground mb-1">Nível da Rotina</label>
+                                <select id="level" th:field="*{routineLevel}" class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                                    <option th:each="opt : ${allRoutineLevels}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="goal" class="block text-sm font-medium text-muted-foreground mb-1">Objetivo Principal</label>
+                                <select id="goal" th:field="*{goals}" multiple class="w-full p-3 h-24 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                                    <option th:each="opt : ${allGoalTypes}" th:value="${opt.name()}" th:text="${opt.name()}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="startDate" class="block text-sm font-medium text-muted-foreground mb-1">Data Início (Opcional)</label>
+                                <input type="date" id="startDate" th:field="*{startDate}"
+                                    class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                            </div>
+                            <div>
+                                <label for="endDate" class="block text-sm font-medium text-muted-foreground mb-1">Data Fim (Opcional)</label>
+                                <input type="date" id="endDate" th:field="*{endDate}"
+                                    class="w-full p-3 rounded-md bg-background border border-border focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-foreground">
+                            </div>
+                        </div>
+                
+                        <div class="border-t border-border pt-6">
+                            <h3 class="text-xl font-semibold text-foreground mb-4">Treinos</h3>
+                            <div id="trainings-list" class="space-y-6">
+                            </div>
+                            <button type="button" id="add-training-btn"
+                                    class="mt-4 inline-flex items-center justify-center px-4 py-2 h-9 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-medium transition-colors">
+                                Adicionar Treino
+                            </button>
+                        </div>
+                        
+                        <script th:inline="javascript">
+                            /*<![CDATA[*/
+                            allExercises = /*[[${exercises}]]*/ [];
+                            allTechniques = /*[[${allTrainingTechniques}]]*/ [];
+                            allMuscleGroups = /*[[${allMuscleGroups}]]*/ [];
+                            /*]]>*/
+                        </script>
+                    </div>
+                </div>
+
             </div>
-            <button type="button" id="add-training-btn"
-                    class="mt-4 inline-flex items-center justify-center px-4 py-2 h-9 rounded-md bg-accent hover:bg-accent/90 text-accent-foreground text-sm font-medium transition-colors">
-                Adicionar Treino
-            </button>
-        </div>
-    </div>
+            </form> </div>
     
-    <!-- 
-      MUDANÇA:
-      - Script atualizado para usar os enums injetados nos <select>
-    -->
     <script th:inline="javascript">
         /*<![CDATA[*/
         
-        // Os Enums agora são nulos no início, eles só virão com os fragmentos HTMX
-        let allExercises = /*[[${exercises}]]*/ null;
-        let allTechniques = /*[[${allTrainingTechniques}]]*/ null;
-        let allContentBlockTypes = /*[[${allContentBlockTypes}]]*/ null;
-        let allMuscleGroups = /*[[${allMuscleGroups}]]*/ null;
+        let allExercises = [];
+        let allTechniques = [];
+        let allContentBlockTypes = [];
+        let allMuscleGroups = [];
 
         let trainingIdx = 0;
         let contentBlockIdx = 0;
@@ -218,15 +223,11 @@
         // === LÓGICA PARA BLOCOS DE CONTEÚDO (MATERIAL) ===
         function createContentBlockHtml(cIdx) {
             
-            // Recarrega os enums (eles vêm do fragmento)
-            if (!allContentBlockTypes) {
-                allContentBlockTypes = /*[[${allContentBlockTypes}]]*/ [];
-            }
             let blockTypeOptions = allContentBlockTypes.map(type => `<option value="${type}">${type}</option>`).join('');
 
             return `
             <div class="dynamic-item p-4 border border-border rounded-lg space-y-3 bg-background/50">
-                <span class="remove-btn remove-btn-top" onclick="this.parentElement.remove()">X</span>
+                <span class="remove-btn" onclick="this.parentElement.remove()">X</span>
                 <div>
                     <label class="text-xs font-medium text-muted-foreground">Tipo de Bloco</label>
                     <select name="contentBlocks[${cIdx}].type" class="w-full p-2 text-sm rounded-md bg-background border border-border">
@@ -243,10 +244,6 @@
 
         // === LÓGICA PARA TREINOS E SÉRIES (ROTINA) ===
         function createExerciseSetHtml(tIdx, eIdx) {
-            // Recarrega os enums (eles vêm do fragmento)
-            if (!allExercises) allExercises = /*[[${exercises}]]*/ [];
-            if (!allTechniques) allTechniques = /*[[${allTrainingTechniques}]]*/ [];
-
             let exOptions = allExercises.map(ex => `<option value="${ex.id}">${ex.name}</option>`).join('');
             let techOptions = '<option value="">Nenhuma</option>' + allTechniques.map(t => `<option value="${t}">${t}</option>`).join('');
 
@@ -259,7 +256,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs font-medium text-muted-foreground">Séries</label>
+                    <label class:="text-xs font-medium text-muted-foreground">Séries</label>
                     <input type="number" name="trainingDtos[${tIdx}].trainingSets[${eIdx}].sets" class="w-full p-2 text-sm rounded-md bg-background border border-border" placeholder="Ex: 3">
                 </div>
                 <div>
@@ -291,16 +288,13 @@
         }
         
         function createTrainingHtml(tIdx) {
-            // Recarrega os enums (eles vêm do fragmento)
-            if (!allMuscleGroups) allMuscleGroups = /*[[${allMuscleGroups}]]*/ [];
-            
             let muscleGroupOptions = allMuscleGroups.map(mg => `<option value="${mg}">${mg}</option>`).join('');
 
             return `
             <div class="dynamic-item p-4 border border-border rounded-lg space-y-4 bg-background/30">
-                <span class="remove-btn remove-btn-top" onclick="this.parentElement.remove()">X</span>
+                <span class="remove-btn" onclick="this.parentElement.remove()">X</span>
                 <div>
-                    <label class="block text-sm font-medium text-muted-foreground mb-1">Nome do Treino</label>
+                    <label class."block text-sm font-medium text-muted-foreground mb-1">Nome do Treino</label>
                     <input type="text" name="trainingDtos[${tIdx}].name" class="w-full p-3 rounded-md bg-background border border-border" placeholder="Ex: Treino A - Peito e Tríceps">
                 </div>
                 <div>
@@ -334,8 +328,10 @@
             if (e.target && e.target.classList.contains('add-exercise-set-btn')) {
                 const setsList = e.target.previousElementSibling;
                 const trainingItem = e.target.closest('.dynamic-item');
+                // Encontra o índice 'tIdx' corretamente
                 const tIdx = Array.from(document.getElementById('trainings-list').children).indexOf(trainingItem);
-                const eIdx = setsList.children.length -1; 
+                // O índice 'eIdx' é simplesmente o número de filhos atuais
+                const eIdx = setsList.children.length - 1; // -1 por causa do <h4>
                 
                 const newExerciseSet = document.createElement('div');
                 newExerciseSet.innerHTML = createExerciseSetHtml(tIdx, eIdx);

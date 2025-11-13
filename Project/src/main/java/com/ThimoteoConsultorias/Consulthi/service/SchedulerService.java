@@ -48,7 +48,7 @@ public class SchedulerService
     // ----------------------------------------------------
 
     /*
-     * INFRASTRUCTURE / SCHEDULING
+     * SCHEDULING
      */
     
     /**
@@ -76,8 +76,8 @@ public class SchedulerService
      * Agenda a exclusão permanente de um usuário após 1 mês (RF04).
      */
     @Transactional
-    public void scheduleDataDeletion(User user) {
-        // Implementação conforme a lógica que já definimos
+    public void scheduleDataDeletion(User user)
+    {
         if (inactivationSchedulingRepository.findById(user.getId()).isPresent())
         {
             System.out.println("Scheduler: Usuário " + user.getId() + " já tem exclusão agendada. Ignorando novo agendamento.");

@@ -45,7 +45,7 @@
                             <tr th:each="user : ${pendingUsers}" class="border-b border-border last:border-b-0">
                                 <td class="p-4 text-foreground" th:text="${user.fullName}">Nome do Profissional</td>
                                 <td class="p-4 text-foreground" th:text="${user.username}">username.pro</td>
-                                <td class="p-4 text-foreground" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}">01/01/2024</td>
+                                <td class="p-4 text-foreground" th:text="${#temporals.format(user.dateLogon, 'dd/MM/yyyy')}">01/01/2025</td>
                                 <td class="p-4">
                                     <div class="flex flex-wrap gap-1">
                                         <span th:each="role : ${user.roles}" th:text="${role.name()}"
@@ -55,7 +55,7 @@
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <form th:action="@{/admin/approve/{userId}(userId=${user.id})}" method="post">
+                                    <form th:action="@{/administrator/approve/{userId}(userId=${user.id})}" method="post">
                                         <button type="submit"
                                                 class="inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-medium transition-colors">
                                             Aprovar
@@ -97,9 +97,11 @@
                                 <td class="p-4 text-foreground" th:text="${user.fullName}">Nome do Usuário</td>
                                 <td class="p-4 text-foreground" th:text="${user.username}">username</td>
                                 <td class="p-4">
-                                    <span th:text="${user.status}"
-                                          th:classappend="${user.status == 'ACTIVE'} ? 'text-primary' : 'text-destructive'"
-                                          class="text-sm font-bold">
+                                    <span th:text="${user.active ? 'ACTIVE' : 'INACTIVE'}"
+                                        
+                                        th:classappend="${user.active} ? 'text-primary' : 'text-destructive'"
+                                        
+                                        class="text-sm font-bold">
                                         STATUS
                                     </span>
                                 </td>
@@ -112,7 +114,7 @@
                                     </div>
                                 </td>
                                 <td class="p-4">
-                                    <form th:action="@{/admin/remove/{userId}(userId=${user.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja REMOVER PERMANENTEMENTE este usuário?')">
+                                    <form th:action="@{/administrator/remove/{userId}(userId=${user.id})}" method="post" onsubmit="return confirm('Tem certeza que deseja REMOVER PERMANENTEMENTE este usuário?')">
                                         <button type="submit"
                                                 class="inline-flex items-center justify-center px-3 py-1.5 h-8 rounded-md bg-destructive hover:bg-destructive/80 text-primary-foreground text-sm font-medium transition-colors">
                                             Remover

@@ -41,13 +41,17 @@
                     </thead>
                     <tbody>
                         <tr th:each="content : ${contents}" class="border-b border-border last:border-b-0">
-                            <td class="p-4 text-foreground font-medium" th:text="${content.title}">
+                            <td class="p-4 text-foreground font-medium" th:text="${content.name}">
                                 Título do Conteúdo
                             </td>
                             <td class="p-4">
-                                <span th:text="${content.contentType.name()}"
-                                      th:classappend="${content.contentType.name() == 'ROUTINE'} ? 'bg-primary/10 text-primary' : (${content.contentType.name() == 'DIET'} ? 'bg-secondary/10 text-secondary' : 'bg-accent/10 text-accent')"
-                                      class="px-2 py-0.5 rounded-full text-xs font-medium">
+                                <span th:text="${(content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Routine)) ? 'ROUTINE' :
+                                            ((content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Diet)) ? 'DIET' : 'MATERIAL')}"
+                                    
+                                    th:classappend="${(content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Routine)) ? 'bg-primary/10 text-primary' :
+                                                    ((content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Diet)) ? 'bg-secondary/10 text-secondary' : 'bg-accent/10 text-accent')}"
+                                                    
+                                    class="px-2 py-0.5 rounded-full text-xs font-medium">
                                     TIPO
                                 </span>
                             </td>

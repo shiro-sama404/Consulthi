@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/administrator")
 @PreAuthorize("hasAuthority('ADMINISTRATOR')")
 public class AdministratorController
 {
@@ -35,7 +35,7 @@ public class AdministratorController
     /**
      * Rota de gerenciamento principal para o Administrador (HTML - Web Dashboard).
      */
-    @GetMapping
+    @GetMapping("/dashboard")
     public String adminHome(Model model)
     {
         List<User> allUsers = administratorService.listAllUsers();
@@ -44,7 +44,7 @@ public class AdministratorController
         model.addAttribute("allUsers", allUsers);
         model.addAttribute("pendingUsers", pendingUsers);
         
-        return "admin/dashboard";
+        return "administrator/dashboard";
     }
 
     /**
@@ -59,7 +59,7 @@ public class AdministratorController
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", "Erro ao aprovar: " + e.getMessage());
         }
-        return "redirect:/admin";
+        return "redirect:/administrator/dashboard";
     }
 
     /**
@@ -74,7 +74,7 @@ public class AdministratorController
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Erro ao remover: " + e.getMessage());
         }
-        return "redirect:/admin";
+        return "redirect:/administrator/dashboard";
     }
 
     // ----------------------------------------------------------------------------------

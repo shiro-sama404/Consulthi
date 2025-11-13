@@ -69,7 +69,7 @@ public class AuthenticationController
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             
             if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ADMINISTRATOR")))
-                return "redirect:/admin/dashboard";
+                return "redirect:/administrator/dashboard";
             
             if (authorities.stream().anyMatch(a -> a.getAuthority().equals("COACH") || 
                                                    a.getAuthority().equals("NUTRITIONIST") || 

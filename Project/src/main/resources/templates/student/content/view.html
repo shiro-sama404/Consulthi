@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <title th:text="${content.name ?: 'Conteúdo'}">Visualizar Conteúdo</title>
+</head>
+
+<main layout:fragment="content" class="pt-24 pb-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-foreground" th:text="${content.name}"></h1>
+            <p class="text-lg text-muted-foreground mt-2" th:text="${content.description}"></p>
+            <div class="flex items-center gap-2 mt-4">
+                <span class="text-sm font-medium text-muted-foreground">Criado por:</span>
+                <span class="text-sm font-semibold text-primary" th:text="${content.creator.user.fullName}"></span>
+            </div>
+        </div>
+        
+        <div> <div th:if="${content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Routine)}" th:with="routine=${content}">
+                
+                </div>
+
+            <div th:if="${content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Diet)}" th:with="diet=${content}">
+                <div class="bg-card border border-border rounded-xl shadow-lg p-8">
+                    <div>
+                        <label class="block text-sm font-medium text-muted-foreground mb-2">Plano Alimentar</label>
+                        <div class="prose prose-invert max-w-none bg-background p-4 rounded-md border border-border"
+                             th:utext="${#strings.replace(diet.mealsEspecifications, '\n', '&lt;br/&gt;')}">
+                        </div>
+                        </div>
+                </div>
+            </div>
+
+            <div th:if="${content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Material)}" th:with="material=${content}">
+                 <div class="bg-card border border-border rounded-xl shadow-lg p-8">
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span th:each="tag : ${material.tags}" th:text="${tag}"
+                              class="px-3 py-1 rounded-full bg-accent/10 text-accent text-sm font-medium">
+                        </span>
+                    </div>
+                     
+                    <div class="space-y-6">
+                        <div th:each="block : ${material.contentBlocks}">
+                            
+                            <div th:if="${block.type == 'TEXT'}">
+                                <p class="text-foreground" th:utext="${#strings.replace(block.value, '\n', '&lt;br/&gt;')}"></p>
+                            </div>
+                            
+                            <div th:if="${block.type == 'IMAGE'}">
+                                <img th:src="${block.value}" alt="Imagem do material" class="w-full h-auto rounded-md border border-border"/>
+                            </div>
+                            <div th:if="${block.type == 'VIDEO'}" class="aspect-video">
+                                <iframe class="w-full h-full rounded-md border border-border" 
+                                        th:src="${block.value}" 
+                                        frameborder="0" 
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                        allowfullscreen>
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+            <div th:if="${not (content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Routine) or
+                               content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Diet) or
+                               content instanceof T(com.ThimoteoConsultorias.Consulthi.model.Material))}">
+                <p class="text-muted-foreground">Tipo de conteúdo não reconhecido.</p>
+            </div>
+        </div>
+        </div>
+</main>
+</html>

@@ -7,6 +7,7 @@ import com.ThimoteoConsultorias.Consulthi.model.Student;
 import com.ThimoteoConsultorias.Consulthi.model.User;
 import com.ThimoteoConsultorias.Consulthi.repository.UserRepository;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,10 +26,10 @@ public class UserService
     private final PasswordEncoder passwordEncoder;
     private final UserRepository  userRepository;
 
-    //private final StudentProfessionalLinkService linkService;
+    private final StudentProfessionalLinkService linkService;
     private final NotificationService notificationService;
     private final ProfessionalService professionalService; 
-    //private final SchedulerService schedulerService; 
+    private final SchedulerService schedulerService; 
     private final StudentService studentService; 
 
     // ----------------------------------------------------
@@ -36,11 +37,11 @@ public class UserService
     // ----------------------------------------------------
     public UserService
     (
-        //StudentProfessionalLinkService linkService,
+        @Lazy StudentProfessionalLinkService linkService,
         NotificationService notificationService,
         PasswordEncoder passwordEncoder,
         ProfessionalService professionalService,
-        //SchedulerService schedulerService,
+        @Lazy SchedulerService schedulerService,
         StudentService studentService,
         UserRepository userRepository
     )
@@ -48,10 +49,10 @@ public class UserService
         this.passwordEncoder = passwordEncoder;
         this.userRepository  = userRepository;
 
-        //this.linkService = linkService;
+        this.linkService = linkService;
         this.notificationService = notificationService;
         this.professionalService = professionalService;
-        //this.schedulerService = schedulerService;
+        this.schedulerService = schedulerService;
         this.studentService = studentService;
     }
 
@@ -96,8 +97,8 @@ public class UserService
         {
             Student student = studentService.createStudentProfile(savedUser);
             
-            //if (userDetails.selectedProfessionalIds() != null && !userDetails.selectedProfessionalIds().isEmpty())
-            //    linkService.createPendingLinks(student, userDetails.selectedProfessionalIds());
+            if (userDetails.selectedProfessionalIds() != null && !userDetails.selectedProfessionalIds().isEmpty())
+                linkService.createPendingLinks(student, userDetails.selectedProfessionalIds());
         } 
         
         if (userDetails.roles().stream().anyMatch(Role::isProfessionalRole))
@@ -220,7 +221,6 @@ public class UserService
             int newAttempts = user.getFailedLoginAttempts() + 1;
             user.setFailedLoginAttempts(newAttempts);
             
-            // Regra de Notificação
             if (newAttempts == 5)
                 notificationService.notifyUserOfMultipleFailedLogins(user.getId(), newAttempts);
 
@@ -234,7 +234,6 @@ public class UserService
     //@Transactional
     public void resetLoginAttempts(String username)
     {
-        // Usa o método de leitura para obter o User
         User user = getUserByUsername(username); 
         
         if (user != null && user.getFailedLoginAttempts() > 0)
@@ -261,6 +260,8 @@ public class UserService
         
         user.setActive(false);
         userRepository.save(user);
+
+        schedulerService.scheduleDataDeletion(user);
         
         return user;
     }

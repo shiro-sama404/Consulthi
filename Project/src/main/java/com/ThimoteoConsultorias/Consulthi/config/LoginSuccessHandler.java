@@ -56,7 +56,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler
     private String determineTargetUrl(Set<String> roles)
     {
         if (roles.contains("ADMINISTRATOR"))
-            return "/admin"; // 1ª Prioridade
+            return "/administrator/dashboard"; // 1ª Prioridade
         else if (roles.contains("COACH") || roles.contains("NUTRITIONIST") || roles.contains("PSYCHOLOGIST"))
             return "/professional/dashboard"; // 2ª Prioridade
         else if (roles.contains("STUDENT"))
