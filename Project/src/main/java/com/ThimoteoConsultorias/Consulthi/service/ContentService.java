@@ -9,12 +9,16 @@ import com.ThimoteoConsultorias.Consulthi.model.Material;
 import com.ThimoteoConsultorias.Consulthi.model.Professional;
 import com.ThimoteoConsultorias.Consulthi.model.Routine;
 import com.ThimoteoConsultorias.Consulthi.model.Training;
+import com.ThimoteoConsultorias.Consulthi.model.embeddables.TrainingSet;
 import com.ThimoteoConsultorias.Consulthi.repository.ContentRepository;
 
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,6 +92,33 @@ public class ContentService
 
         if (content.getCreator() != null && content.getCreator().getUser() != null)
             content.getCreator().getUser().getFullName();
+
+        if (content instanceof Routine)
+        {
+            Routine routine = (Routine) content;
+
+            Hibernate.initialize(routine.getGoals());
+
+            for (Training training : routine.getTrainings())
+            {
+                Hibernate.initialize(training.getTargetMuscleGroups());
+                Hibernate.initialize(training.getTrainingSets());
+
+                for(TrainingSet set : training.getTrainingSets())
+                    Hibernate.initialize(set);
+            }
+        }
+        else if (content instanceof Diet)
+        {
+            Diet diet = (Diet) content;
+            Hibernate.initialize(diet.getMealsEspecifications());
+        }
+        else if (content instanceof Material)
+        {
+            Material material = (Material) content;
+            Hibernate.initialize(material.getTags());
+            Hibernate.initialize(material.getContentBlocks());
+        }
 
         return content;
     }
@@ -189,6 +220,7 @@ public class ContentService
     /**
      * Busca o Conteúdo e o converte para DTO, validando a autoria.
      */
+    @Transactional(readOnly = true)
     public ContentDTO getContentAsDTO(Long contentId, Long professionalId)
     {
         Content content = getContentByCreatorId(contentId, professionalId, null);
@@ -204,32 +236,31 @@ public class ContentService
     {
         Content content = getContentByCreatorId(contentId, professionalId, null);
         
-        // Garante que o tipo no DTO é o mesmo da entidade persistida
-        if (contentDto.contentType() != getContentType(content))
+        if (contentDto.getContentType() != getContentType(content))
             throw new IllegalArgumentException("O tipo de conteúdo não pode ser alterado durante a edição.");
 
-        content.setName(contentDto.name());
-        content.setDescription(contentDto.description());
+        content.setName(contentDto.getName());
+        content.setDescription(contentDto.getDescription());
         
-        content.setAccessStudentIds(contentDto.accessStudentIds());
+        content.setAccessStudentIds(contentDto.getAccessStudentIds());
         content.setLastModificationDate(LocalDateTime.now());
         
         
         if (content instanceof Diet diet)
-            diet.setMealsEspecifications(contentDto.mealsEspecifications());
+            diet.setMealsEspecifications(contentDto.getMealsEspecifications());
         
         else if (content instanceof Material material)
         {
-            material.setTags(contentDto.tags());
-            material.setContentBlocks(contentDto.contentBlocks());
+            material.setTags(contentDto.getTags());
+            material.setContentBlocks(contentDto.getContentBlocks());
         }
         
         else if (content instanceof Routine routine)
         {
-            routine.setRoutineLevel(contentDto.routineLevel());
-            routine.setGoals(contentDto.goals());
+            routine.setRoutineLevel(contentDto.getRoutineLevel());
+            routine.setGoals(contentDto.getGoals());
             
-            List<Training> newTrainings = contentDto.trainingDtos().stream()
+            List<Training> newTrainings = contentDto.getTrainingDtos().stream()
                 .map(trainingService::createTrainingFromDTO)
                 .collect(Collectors.toList());
              
@@ -264,46 +295,45 @@ public class ContentService
      */
     private Content ToContent(ContentDTO dto, Professional creator)
     {
-        // ... (Implementação existente, OK)
-        switch (dto.contentType())
+        switch (dto.getContentType())
         {
             case DIET:
                 return Diet.builder()
-                    .name(dto.name())
-                    .description(dto.description())
+                    .name(dto.getName())
+                    .description(dto.getDescription())
                     .creator(creator)
-                    .accessStudentIds(dto.accessStudentIds())
-                    .mealsEspecifications(dto.mealsEspecifications())
+                    .accessStudentIds(dto.getAccessStudentIds())
+                    .mealsEspecifications(dto.getMealsEspecifications())
                     .build();
                     
             case MATERIAL:
                 return Material.builder()
-                    .name(dto.name())
-                    .description(dto.description())
+                    .name(dto.getName())
+                    .description(dto.getDescription())
                     .creator(creator)
-                    .accessStudentIds(dto.accessStudentIds())
-                    .tags(dto.tags())
-                    .contentBlocks(dto.contentBlocks())
+                    .accessStudentIds(dto.getAccessStudentIds())
+                    .tags(dto.getTags())
+                    .contentBlocks(dto.getContentBlocks())
                     .build();
                     
             case ROUTINE:
-                List<Training> savedTrainings = dto.trainingDtos() != null ? 
-                    dto.trainingDtos().stream()
+                List<Training> savedTrainings = dto.getTrainingDtos() != null ? 
+                    dto.getTrainingDtos().stream()
                     .map(trainingService::createTrainingFromDTO)
                     .collect(Collectors.toList()) : List.of();
 
                 return Routine.builder()
-                    .name(dto.name())
-                    .description(dto.description())
+                    .name(dto.getName())
+                    .description(dto.getDescription())
                     .creator(creator)
-                    .accessStudentIds(dto.accessStudentIds())
-                    .routineLevel(dto.routineLevel())
-                    .goals(dto.goals())
+                    .accessStudentIds(dto.getAccessStudentIds())
+                    .routineLevel(dto.getRoutineLevel())
+                    .goals(dto.getGoals())
                     .trainings(savedTrainings)
                     .build();
                     
             default:
-                throw new IllegalArgumentException("Tipo de conteúdo inválido: " + dto.contentType());
+                throw new IllegalArgumentException("Tipo de conteúdo inválido: " + dto.getContentType());
         }
     }
 
@@ -335,7 +365,7 @@ public class ContentService
             .creationDate(content.getCreationDate())
             .lastModificationDate(content.getLastModificationDate())
             .contentType(contentType)
-            .accessStudentIds(content.getAccessStudentIds());
+            .accessStudentIds(new HashSet<>(content.getAccessStudentIds()));
        
         switch(contentType)
         {
@@ -346,16 +376,16 @@ public class ContentService
 
             case MATERIAL:
                 Material material = (Material) content;
-                builder.tags(material.getTags());
-                builder.contentBlocks(material.getContentBlocks());
+                builder.tags(new HashSet<>(material.getTags()));
+                builder.contentBlocks(new ArrayList<>(material.getContentBlocks()));
                 break;
 
             case ROUTINE:
                 Routine routine = (Routine) content;
                 builder.routineLevel(routine.getRoutineLevel());
-                builder.goals(routine.getGoals());
+                builder.goals(new HashSet<>(routine.getGoals()));
                 
-                builder.trainingDtos(routine.getTrainings().stream()
+                builder.trainingDtos(new ArrayList<>(routine.getTrainings()).stream()
                     .map(trainingService::toDTO) 
                     .collect(Collectors.toList()));
                 break;

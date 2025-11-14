@@ -4,6 +4,7 @@ import com.ThimoteoConsultorias.Consulthi.dto.TrainingDTO;
 import com.ThimoteoConsultorias.Consulthi.dto.TrainingSetDTO;
 import com.ThimoteoConsultorias.Consulthi.exception.ResourceNotFoundException;
 import com.ThimoteoConsultorias.Consulthi.model.embeddables.TrainingSet;
+import com.ThimoteoConsultorias.Consulthi.model.Exercise;
 import com.ThimoteoConsultorias.Consulthi.model.Training;
 import com.ThimoteoConsultorias.Consulthi.repository.ExerciseRepository;
 import com.ThimoteoConsultorias.Consulthi.repository.TrainingRepository;
@@ -11,6 +12,8 @@ import com.ThimoteoConsultorias.Consulthi.repository.TrainingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,13 +55,13 @@ public class TrainingService
     @Transactional
     public Training createTrainingFromDTO(TrainingDTO dto)
     {
-        List<TrainingSet> sets = dto.trainingSets().stream()
+        List<TrainingSet> sets = dto.getTrainingSets().stream()
             .map(this::mapTrainingSetDtoToEntity)
             .collect(Collectors.toList());
         
         Training training = Training.builder()
-            .name(dto.name())
-            .targetMuscleGroups(dto.targetMuscleGroups())
+            .name(dto.getName())
+            .targetMuscleGroups(dto.getTargetMuscleGroups())
             .trainingSets(sets)
             .build();
             
@@ -82,9 +85,9 @@ public class TrainingService
     /**
      * Retorna oa templatea de todos os Treinos.
      */
-    public List<Training> listAllExercises() throws ResourceNotFoundException
+    public List<Exercise> listAllExercises() throws ResourceNotFoundException
     {
-        return trainingRepository.findAll();
+        return exerciseRepository.findAll();
     }
 
     // ----------------------------------------------------
@@ -96,12 +99,12 @@ public class TrainingService
      */
     public TrainingDTO toDTO(Training training)
     {
-        List<TrainingSetDTO> trainingSetDTOs = training
-            .getTrainingSets()
+        List<TrainingSetDTO> trainingSetDTOs = new ArrayList<>(training.getTrainingSets())
             .stream()
             .map(set -> new TrainingSetDTO(
                 set.getExerciseOrder(),
                 set.getExerciseId(),
+                set.getSets(),
                 set.getRepetitions(),
                 set.getRestTimeSeconds(),
                 set.getTechnique(),
@@ -113,7 +116,7 @@ public class TrainingService
         TrainingDTO dto = TrainingDTO.builder()
             .id(training.getId())
             .name(training.getName())
-            .targetMuscleGroups(training.getTargetMuscleGroups())
+            .targetMuscleGroups(new HashSet<>(training.getTargetMuscleGroups()))
             .trainingSets(trainingSetDTOs)
             .build();
 
@@ -126,20 +129,21 @@ public class TrainingService
      */
     private TrainingSet mapTrainingSetDtoToEntity(TrainingSetDTO dto)
     {
-        if (dto.exerciseId() != null)
+        if (dto.getExerciseId() != null)
         {
-            exerciseRepository.findById(dto.exerciseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Exercício de ID " + dto.exerciseId() + " não encontrado no catálogo."));
+            exerciseRepository.findById(dto.getExerciseId())
+                .orElseThrow(() -> new ResourceNotFoundException("Exercício de ID " + dto.getExerciseId() + " não encontrado no catálogo."));
         }
 
         return TrainingSet.builder()
-            .exerciseOrder(dto.exerciseOrder())
-            .exerciseId(dto.exerciseId())
-            .repetitions(dto.repetitions())
-            .restTimeSeconds(dto.restTimeSeconds())
-            .technique(dto.technique())
-            .loadInKg(dto.loadInKg())
-            .durationSeconds(dto.durationSeconds())
+            .exerciseOrder(dto.getExerciseOrder())
+            .exerciseId(dto.getExerciseId())
+            .sets(dto.getSets())
+            .repetitions(dto.getRepetitions())
+            .restTimeSeconds(dto.getRestTimeSeconds())
+            .technique(dto.getTechnique())
+            .loadInKg(dto.getLoadInKg())
+            .durationSeconds(dto.getDurationSeconds())
             .build();
     }
 }

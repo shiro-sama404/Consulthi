@@ -2,6 +2,9 @@ package com.ThimoteoConsultorias.Consulthi.model;
 
 import com.ThimoteoConsultorias.Consulthi.enums.ExpertiseArea;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -33,11 +36,13 @@ public class Professional
     @Id
     private Long id;
 
+    @JsonBackReference("user-prof")
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "professional", cascade = CascadeType.REMOVE, orphanRemoval = true) 
     private Set<StudentProfessionalLink> studentLinks;
 

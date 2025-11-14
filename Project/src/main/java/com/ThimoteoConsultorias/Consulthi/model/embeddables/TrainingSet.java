@@ -24,6 +24,7 @@ public class TrainingSet {
     private Long exerciseId; 
     private Integer repetitions;
     private Integer restTimeSeconds;
+    private Integer sets;
 
     @Enumerated(EnumType.STRING)
     private TrainingTechnique technique;

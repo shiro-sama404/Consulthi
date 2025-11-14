@@ -4,9 +4,13 @@ import com.ThimoteoConsultorias.Consulthi.enums.ContentTag;
 import com.ThimoteoConsultorias.Consulthi.enums.ContentType;
 import com.ThimoteoConsultorias.Consulthi.enums.GoalType;
 import com.ThimoteoConsultorias.Consulthi.enums.RoutineLevel;
-import com.ThimoteoConsultorias.Consulthi.model.embeddables.ContentBlock; // Import correto
+import com.ThimoteoConsultorias.Consulthi.model.embeddables.ContentBlock;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,35 +18,38 @@ import java.util.List;
 import java.util.Set;
 
 @Builder
-public record ContentDTO
-(
-    Long id,
-    String name,
-    String description,
-    ContentType contentType, 
-    Set<Long> accessStudentIds,
-    LocalDateTime creationDate,
-    LocalDateTime lastModificationDate,
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ContentDTO
+{
+    private Long id;
+    private String name;
+    private String description;
+    private ContentType contentType; 
+    private Set<Long> accessStudentIds;
+    private LocalDateTime creationDate;
+    private LocalDateTime lastModificationDate;
     
     // ==========================================================
     // DIET
     // ==========================================================
-    String mealsEspecifications, 
+    private String mealsEspecifications; 
     
     // ==========================================================
     // MATERIAL
     // ==========================================================
-    Set<ContentTag> tags,
-    List<ContentBlock> contentBlocks, 
+    private Set<ContentTag> tags;
+    private List<ContentBlock> contentBlocks; 
 
     // ==========================================================
     // ROUTINE
     // ==========================================================
-    RoutineLevel routineLevel,
-    LocalDate startDate,
-    LocalDate endDate,
-    Set<GoalType> goals,
+    private RoutineLevel routineLevel;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Set<GoalType> goals;
     
-    List<TrainingDTO> trainingDtos
-) 
-{}
+    private List<TrainingDTO> trainingDtos;
+}

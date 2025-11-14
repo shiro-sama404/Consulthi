@@ -13,8 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -141,9 +143,15 @@ public class UserService
     /**
      * Retorna todos os usuários com paginação.
      */
-    public Page<User> getAllUsers(Pageable pageble)
+    public Page<User> getAllUsersPaged(Pageable pageble)
     {
         return userRepository.findAll(pageble);
+    }
+
+    @GetMapping("/users")
+    public List<User> getAllUsers()
+    {
+        return userRepository.findAllWithProfilesAndRoles(); // <-- Para isso
     }
 
     /**

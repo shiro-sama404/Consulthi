@@ -2,6 +2,9 @@ package com.ThimoteoConsultorias.Consulthi.model;
 
 import com.ThimoteoConsultorias.Consulthi.model.embeddables.Goal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -30,11 +33,13 @@ public class Student
     @Id
     private Long id;
 
+    @JsonBackReference("user-student")
     @OneToOne
     @MapsId
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE, orphanRemoval = true) 
     private Set<StudentProfessionalLink> professionalLinks;
 

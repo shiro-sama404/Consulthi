@@ -161,7 +161,16 @@ public class ContentController
         model.addAttribute("allGoalTypes", GoalType.values());
         model.addAttribute("allTrainingTechniques", TrainingTechnique.values());
         model.addAttribute("allMuscleGroups", MuscleGroup.values());
-        model.addAttribute("exercises", trainingService.listAllExercises());
+        
+        try 
+        {
+            model.addAttribute("exercises", trainingService.listAllExercises());
+        } 
+        catch (Exception e) 
+        {
+            model.addAttribute("exercises", List.of()); 
+            model.addAttribute("error", "Alerta: Não foi possível carregar a lista de exercícios pré-definidos.");
+        }
 
         try 
         {
@@ -215,7 +224,7 @@ public class ContentController
         try 
         {
             contentService.createContent(contentDto, currentUserId);
-            redirectAttributes.addFlashAttribute("message", "Conteúdo (" + contentDto.contentType().name() + ") criado com sucesso!");
+            redirectAttributes.addFlashAttribute("message", "Conteúdo (" + contentDto.getContentType().name() + ") criado com sucesso!");
             return "redirect:/professional/content";
         } 
         catch (IllegalArgumentException e) 

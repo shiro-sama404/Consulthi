@@ -2,6 +2,10 @@ package com.ThimoteoConsultorias.Consulthi.desktop;
 
 import com.ThimoteoConsultorias.Consulthi.model.User;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,14 +16,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import org.springframework.stereotype.Component;
+
 
 import java.util.List;
 import java.util.Optional;
 import jakarta.annotation.PostConstruct; 
 
 @Component
-public class AdminDesktopController
+public class AdminDesktopController implements ApplicationListener<ApplicationReadyEvent>
 {
     private final AdminApiRestClient adminApiRestClient;
     
@@ -66,12 +70,12 @@ public class AdminDesktopController
     }
     
     /**
-     * Chamado após a construção e injeção do Spring.
+     * Este método é chamado pelo Spring DEPOIS que a aplicação (incluindo o servidor web)
+     * está 100% pronta.
      */
-    @PostConstruct
-    public void initData()
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent event)
     {
-        // Carrega os dados em uma thread separada (pra não travar a GUI)
         loadData();
     }
     
@@ -83,6 +87,8 @@ public class AdminDesktopController
         new Thread(() -> {
             try 
             {
+                Thread.sleep(500);
+
                 List<User> pending = adminApiRestClient.getPendingProfessionals(); 
                 List<User> all = adminApiRestClient.findAllUsers();
 
@@ -97,6 +103,13 @@ public class AdminDesktopController
                 Platform.runLater(() -> showErrorAlert("Erro de Comunicação", "Não foi possível conectar ao backend Spring Boot: " + e.getMessage()));
             }
         }).start();
+    }
+
+    @FXML
+    private void handleRefreshData()
+    {
+        // Simplesmente chama o método de recarregar
+        loadData();
     }
     
     /**
@@ -141,7 +154,7 @@ public class AdminDesktopController
         }
         
         Alert confirmation = new Alert(AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmação de Exclusão (RF08)");
+        confirmation.setTitle("Confirmação de Exclusão");
         confirmation.setHeaderText("Remoção Permanente de Usuário");
         confirmation.setContentText("Você tem certeza que deseja remover permanentemente o usuário '" + selectedUser.getFullName() + "' (ID: " + selectedUser.getId() + ")? Esta ação é irreversível.");
 

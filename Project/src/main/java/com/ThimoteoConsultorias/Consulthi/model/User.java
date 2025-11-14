@@ -1,6 +1,7 @@
 package com.ThimoteoConsultorias.Consulthi.model;
 
 import com.ThimoteoConsultorias.Consulthi.enums.Role;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,9 +40,11 @@ public class User
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonManagedReference("user-student")
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, optional = true)
     private Student studentProfile;
 
+    @JsonManagedReference("user-prof")
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true, optional = true)
     private Professional professionalProfile;
 

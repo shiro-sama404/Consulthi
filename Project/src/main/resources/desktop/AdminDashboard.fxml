@@ -15,22 +15,23 @@
    <children>
       <VBox layoutX="14.0" layoutY="14.0" prefHeight="572.0" prefWidth="772.0" spacing="10.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
          <children>
-            <Label text="🖥️ ConsulThi - Painel de Administração Desktop" textFill="#0f5132">
+            <Label text="🖥️ ConsulThi - Painel de Administração Desktop" textFill="#EF5139ff">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
             <Label text="Utilize este painel para executar funções críticas e exclusivas do Administrador." />
+            <Button mnemonicParsing="false" onAction="#handleRefreshData" prefWidth="200.0" text="🔄 Atualizar Dados" />
             <Separator prefWidth="200.0" />
             <TabPane prefHeight="500.0" prefWidth="772.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
-                <Tab text="Aprovação de Profissionais (RF01)">
+                <Tab text="Aprovação de Profissionais">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
                               <VBox layoutX="14.0" layoutY="14.0" prefHeight="452.0" prefWidth="744.0" spacing="10.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
                                  <children>
-                                    <Label text="Profissionais Pendentes de Aprovação (Regra de Negócio RF01)">
+                                    <Label text="Profissionais Pendentes de Aprovação">
                                        <font>
                                           <Font name="System Bold" size="14.0" />
                                        </font>
@@ -46,14 +47,14 @@
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                        </columnResizePolicy>
                                     </TableView>
-                                    <Button mnemonicParsing="false" onAction="#handleApproveProfessional" prefWidth="200.0" text="✅ Aprovar Selecionado (RF01)" />
+                                    <Button mnemonicParsing="false" onAction="#handleApproveProfessional" prefWidth="200.0" text="✅ Aprovar Selecionado" />
                                  </children>
                               </VBox>
                            </children>
                     </AnchorPane>
                   </content>
                 </Tab>
-                <Tab text="Gestão e Exclusão de Usuários (RF08)">
+                <Tab text="Gestão e Exclusão de Usuários">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -75,7 +76,7 @@
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                        </columnResizePolicy>
                                     </TableView>
-                                    <Button mnemonicParsing="false" onAction="#handleRemoveUser" prefWidth="200.0" text="❌ Remover Usuário Selecionado (RF08)" />
+                                    <Button mnemonicParsing="false" onAction="#handleRemoveUser" prefWidth="200.0" text="❌ Remover Usuário Selecionado" />
                                  </children>
                               </VBox>
                            </children>

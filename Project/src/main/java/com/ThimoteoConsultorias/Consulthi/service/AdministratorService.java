@@ -2,11 +2,13 @@ package com.ThimoteoConsultorias.Consulthi.service;
 
 import com.ThimoteoConsultorias.Consulthi.enums.Role;
 import com.ThimoteoConsultorias.Consulthi.enums.LinkStatus;
+import com.ThimoteoConsultorias.Consulthi.exception.ResourceNotFoundException;
 import com.ThimoteoConsultorias.Consulthi.model.Professional;
 import com.ThimoteoConsultorias.Consulthi.model.Student;
 import com.ThimoteoConsultorias.Consulthi.model.StudentProfessionalLink;
 import com.ThimoteoConsultorias.Consulthi.model.User;
 import com.ThimoteoConsultorias.Consulthi.repository.UserRepository;
+import com.ThimoteoConsultorias.Consulthi.repository.InactivationSchedulingRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class AdministratorService
     // ----------------------------------------------------
     // 1. DEPENDÊNCIAS
     // ----------------------------------------------------
+    private final InactivationSchedulingRepository inactivationSchedulingRepository;
     private final UserRepository userRepository;
     private final StudentProfessionalLinkService linkService;
     private final NotificationService notificationService;
@@ -34,6 +37,7 @@ public class AdministratorService
     // ----------------------------------------------------
     public AdministratorService
     (
+        InactivationSchedulingRepository inactivationSchedulingRepository,
         UserRepository userRepository,
         StudentProfessionalLinkService linkService,
         NotificationService notificationService,
@@ -42,6 +46,7 @@ public class AdministratorService
         UserService userService
     )
     {
+        this.inactivationSchedulingRepository = inactivationSchedulingRepository;
         this.userRepository = userRepository;
         this.linkService = linkService;
         this.notificationService = notificationService;
@@ -88,7 +93,7 @@ public class AdministratorService
      */
     public List<User> listAllUsers()
     {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     /**
@@ -153,34 +158,46 @@ public class AdministratorService
         // Notifica profissionais da deleção do estudante
         if (userToDelete.getRoles().contains(Role.STUDENT))
         {
-            Student studentProfile = studentService.getStudentById(userId);
-            links = linkService.getLinksByStudentAndStatusIn(studentProfile, activeStatuses);
-
-            if (!links.isEmpty())
+            try
             {
-                List<User> receivers = links.stream()
-                    .map(link -> link.getProfessional().getUser())
-                    .collect(Collectors.toList());
-                
-                notificationService.notifyLinkTermination(userToDelete, receivers);
+                Student studentProfile = studentService.getStudentById(userId);
+                links = linkService.getLinksByStudentAndStatusIn(studentProfile, activeStatuses);
+
+                if (!links.isEmpty())
+                {
+                    List<User> receivers = links.stream()
+                        .map(link -> link.getProfessional().getUser())
+                        .collect(Collectors.toList());
+                    
+                    notificationService.notifyLinkTermination(userToDelete, receivers);
+                }
             }
+            catch(ResourceNotFoundException doNothing){}
         }
         
         // Notifica estudantes da deleção do profissional
         if (userToDelete.getRoles().stream().anyMatch(Role::isProfessionalRole))
         {
-            Professional professionalProfile = professionalService.getProfessionalById(userId);
-            links = linkService.getLinksByProfessionalAndStatusIn(professionalProfile, activeStatuses);
-
-            if (!links.isEmpty())
+            try
             {
-                List<User> receivers = links.stream()
-                    .map(link -> link.getStudent().getUser())
-                    .collect(Collectors.toList());
-                
-                notificationService.notifyLinkTermination(userToDelete, receivers);
+                Professional professionalProfile = professionalService.getProfessionalById(userId);
+                links = linkService.getLinksByProfessionalAndStatusIn(professionalProfile, activeStatuses);
+
+                if (!links.isEmpty())
+                {
+                    List<User> receivers = links.stream()
+                        .map(link -> link.getStudent().getUser())
+                        .collect(Collectors.toList());
+                    
+                    notificationService.notifyLinkTermination(userToDelete, receivers);
+                }
             }
+            catch(ResourceNotFoundException doNothing){}
         }
+
+        inactivationSchedulingRepository.findById(userId).ifPresent(schedule -> {
+            inactivationSchedulingRepository.delete(schedule);
+        });
 
         userRepository.delete(userToDelete);
         System.out.println("ADMIN: Usuário " + userId + " removido permanentemente.");

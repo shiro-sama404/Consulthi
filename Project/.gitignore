@@ -25,6 +25,9 @@ target/
 ### Tailwind ###
 /src/main/resources/static/css/output.css
 
+### Logs ###
+*.log
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

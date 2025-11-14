@@ -2,7 +2,6 @@ package com.ThimoteoConsultorias.Consulthi.desktop;
 
 import com.ThimoteoConsultorias.Consulthi.model.User;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,7 +12,7 @@ import java.util.List;
 public class AdminApiRestClient
 {
     private final RestTemplate restTemplate;
-    private final String BASE_URL = "http://localhost:8080/admin/api"; 
+    private final String BASE_URL = "http://localhost:8080/administrator/api";
 
     public AdminApiRestClient(RestTemplate restTemplate)
     {
@@ -52,10 +51,10 @@ public class AdminApiRestClient
     
     /**
      * Remove um usuário (RF08).
-     * Mapeia para POST /admin/remove/{userId}.
+     * Mapeia para POST /admin/api/remove/{userId}.  <-- CORRIGIDO
      */
     public void removeUser(Long userId)
     {
-        restTemplate.postForLocation("http://localhost:8080/admin/remove/" + userId, null);
+        restTemplate.postForLocation(BASE_URL + "/remove/" + userId, null);
     }
 }

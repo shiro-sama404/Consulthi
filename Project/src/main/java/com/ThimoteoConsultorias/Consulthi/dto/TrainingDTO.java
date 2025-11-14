@@ -2,17 +2,25 @@ package com.ThimoteoConsultorias.Consulthi.dto;
 
 import com.ThimoteoConsultorias.Consulthi.enums.MuscleGroup;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Set;
 
 @Builder
-public record TrainingDTO
-(
-    Long id,
-    String name,
-    Set<MuscleGroup> targetMuscleGroups,
-    List<TrainingSetDTO> trainingSets
-)
-{}
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class TrainingDTO
+{
+    private Long id;
+    private String name;
+    private Set<MuscleGroup> targetMuscleGroups;
+    
+    private List<TrainingSetDTO> trainingSets;
+}

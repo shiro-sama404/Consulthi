@@ -18,6 +18,7 @@ spring:
     cache: false 
   
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
     properties:
@@ -27,7 +28,15 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
 logging:
+  file:
+    # Salva todos os logs em um arquivo chamado 'consulthi.log'
+    # Este arquivo aparecerá na raiz do seu projeto.
+    name: consulthi.log
+  
   level:
+    org.springframework.web: DEBUG
+    
+    com.fasterxml.jackson.databind: DEBUG
     # Mostra todas as queries SQL geradas
     org.hibernate.SQL: DEBUG
     # DEBUG para desenvolvimento

@@ -112,4 +112,15 @@ public class AdministratorController
         administratorService.approveProfessionalRegistration(userId);
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * Endpoint REST para remover o cadastro de um usuário (RF08 - Usado pelo Desktop Admin).
+     */
+    @PostMapping("/api/remove/{userId}")
+    @ResponseBody
+    public ResponseEntity<Void> removeUserApi(@PathVariable Long userId)
+    {
+        administratorService.removeUser(userId);
+        return ResponseEntity.ok().build();
+    }
 }
