@@ -18,8 +18,8 @@ import jakarta.persistence.Enumerated;
 @NoArgsConstructor
 @Getter
 @Setter
-public class TrainingSet {
-
+public class TrainingSet
+{
     private Integer exerciseOrder;
     private Long exerciseId; 
     private Integer repetitions;
@@ -30,6 +30,6 @@ public class TrainingSet {
     private TrainingTechnique technique;
     
     // Campos opcionais para Carga ou Duração
-    private Float loadInKg; 
+    private Float loadInKg;
     private Integer durationSeconds;
 }
